@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"`src/ap_portal/index.js` | Adds two constants, two private lookup constants, four private helpers and one exported function. Changes the `VERSION` line and exte\" (No source contains the figures 51 and 2, and the code contradicts them. The pre-change index.js (envs/dev/ap_portal/ap_portal/index.js, which matches task.compo)"
+  ]
+}

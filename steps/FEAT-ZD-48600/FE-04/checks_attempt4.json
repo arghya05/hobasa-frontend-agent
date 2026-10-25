@@ -1,0 +1,7 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"Attempts 1 to 3 were refused because `file:ap_portal/...` citations did not resolve. ... The code and documentation have not changed since attempt 1.\" (record:brief records only the most recent refusal: five G2 points for file:ap_portal citations. No source gives the reasons for the earlier attempts or says the)",
+    "G1 judge found an unsupported statement: \"In attempt 1, an independent read-only verifier also read the code and reached the same result.\" (No source records a verifier run in an earlier attempt or what it found. This is a claim about earlier work that no source supports.)",
+    "G1 judge found an unsupported statement: \"CQ-4: `file:ap_portal/...` citations did not resolve in attempts 1 to 3, even after the files were opened with Read.\" (This contradicts record:brief. Its refusal reasons say \"the agent never read that file in this session\" for package.json, ci.mjs, README.md, docs/ap_portal.md a)"
+  ]
+}

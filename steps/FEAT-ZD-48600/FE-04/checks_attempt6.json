@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"This step's tool policy allows only `node ci.mjs` and git read commands, so the new function could not be run against a scratch test.\" (None of the sources supports this description of the tool policy. The brief (record:brief) only says to run the CI with `node ci.mjs`, or delegate to the ci-run)"
+  ]
+}

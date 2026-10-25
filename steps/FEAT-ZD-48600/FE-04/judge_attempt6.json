@@ -1,0 +1,22 @@
+{
+  "unsupported": [
+    {
+      "text": "This step's tool policy allows only `node ci.mjs` and git read commands, so the new function could not be run against a scratch test.",
+      "why": "None of the sources supports this description of the tool policy. The brief (record:brief) only says to run the CI with `node ci.mjs`, or delegate to the ci-runner subagent, and not to commit or push. It never says that only `node ci.mjs` and git read commands are allowed, and no input mentions git read commands at all. This statement about how the system behaves is invented. It is not marked as an assumption: it is given as the reason the behaviour was not run."
+    }
+  ],
+  "improvements": [
+    "Delete the stray line at the end of the file, \"[Tool result] [ap_portal] Sources compile\" (task.code.md:158). It is leftover tool output, not part of the document.",
+    "Section 5 reports the CI run only in words: compile Pass, tests pass, static checks show no issues, coverage below 90%. Quote the actual JSON fields from the last line of `node ci.mjs` (compile, tests_run, failures, coverage, static_issues, passed) so the gate can check the result. No CI output is attached to the step, so the judge could not confirm these results.",
+    "The brief says to run CI \"until it passes\", and CI still fails on coverage. CQ-1 explains the conflict (`tests/` is outside FE-04's write scope). It should be raised more visibly as a scope conflict for the spine owner, rather than given the interim answer 'Yes', which presumes the automated check will accept a failing CI.",
+    "CQ-2 is real: `package.json` is still at 2.3.0 (file:ap_portal/package.json) while `VERSION` is now 2.4.0, and docs/ap_portal.md already says 'Package version: 2.4.0'. Make sure a later step owns FC-9, or ask for package.json to be added to the write scope.",
+    "Optional: `escapeHtml(row.id)` turns a missing `id` or `vendor` into the text 'undefined' without raising an error. This differs from the strict TypeError handling for `days` and `amount` (DD-8). Note it as an open point or add it to the tests list."
+  ],
+  "scores": {
+    "correct": 4,
+    "complete": 4,
+    "grounded": 4,
+    "useful": 4
+  },
+  "notes": "I checked the output against the current src/ap_portal/index.js, the pre-change copy (envs/dev/ap_portal/ap_portal/index.js, VERSION '2.3.0', four exports), README.md, docs/ap_portal.md, package.json, ci.mjs and all seven inputs.\n\n- **Last refusal is fixed.** Section 1 now says the change added the four constants, four private functions and one exported function, and changed only the VERSION and module.exports lines. The diff against the pre-change file confirms this.\n- **FC rows and acceptance criteria are correct.** The FC-1 to FC-8 rows, the AC-07.x mapping, the FS-1 amounts (1250.00, 980.50, 15.00, 300.00), the comments description and the documentation summary all match the code and sources.\n- **Design rules and decisions hold.** The code follows feat.design B4.2 to B4.4, DL-1 to DL-4, D-2026-044 and L-011.\n- **Docs and README match the code**, including the worked example output.\n- **One unsupported statement:** the tool-policy statement on line 124.\n- **CI results could not be verified.** Shell commands are blocked for the judge, and no CI output was supplied. Nothing in the sources contradicts them: the two existing tests cover none of the new code, so coverage below 90% is plausible."
+}
