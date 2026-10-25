@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"An earlier result was refused under G2: claims cited `file:ap_portal/ci.mjs`, `file:ap_portal/package.json` and `file:ap_portal/CLAUDE.md`, and the check report\" (record:brief does not say this. The only refusal reason it gives is a G1 judge finding. The 'G2' label and the three file names appear in the brief only inside )"
+  ]
+}

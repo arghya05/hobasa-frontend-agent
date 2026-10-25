@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"Attempts 1 and 2 were refused under G2 for citing repository files outside the step's contract (`ci.mjs`, `package.json`, `CLAUDE.md`), even after they were re-\" (The brief (record:brief) says only that the previous result was refused, and gives the reason as \"the agent never read that file in this session\". That contradi)"
+  ]
+}
