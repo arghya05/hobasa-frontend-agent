@@ -1,51 +1,58 @@
-# FE-02 Access to secrets (Frontend agent)
+# FE-02 · Access to secrets
 
-**Item:** FEAT-ZD-48600 · **status:** done
-**Trigger:** Task creation, or any re-entry trigger ¹  
-**Action:** Check the access for required secrets and ask for access as needed  
-**Outcome expected:** Secrets are available with access permissions
+**Agent:** Frontend · **Item:** FEAT-ZD-48600 · **Status:** ✅ done
+**Approved by:** automated checks and the independent judge
 
-## Inputs (what the agent was given)
+**What this step does:** Check the access for required secrets and ask for access as needed
 
-| Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
+**Expected outcome:** Secrets are available with access permissions
+
+**Started by:** Task creation, or any re-entry trigger ¹
+
+## Input: what the agent received
+
+| # | Input | What it is | Produced by | Open |
 |---|---|---|---|---|
-| feat.tasks | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-02/feat.tasks.md | final_document/e2e-run/runs/run-20261025-123936-feat-zd-48600/workspace/agents/hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
-| org.permission_table | not applicable or by reference | — | — | — |
+| 1 | `feat.tasks` | Engineering tasks with goal, AC, dependencies and size budget | Design agent · DES-04 | [input copy](https://github.com/arghya05/hobasa-frontend-agent/blob/main/inputs/FEAT-ZD-48600/FE-02/feat.tasks.md) · [original](https://github.com/arghya05/hobasa-design-agent/blob/main/outputs/FEAT-ZD-48600/feat.tasks.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-design-agent/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.html) · [PDF](https://github.com/arghya05/hobasa-design-agent/blob/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.pdf) |
+| 2 | `org.permission_table` | Allowed tools, secrets and data per agent | — | not applicable for this item, or passed by reference |
 
-Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
+The full brief the agent was given, attempt by attempt: `brief_attempt<N>.md` in this folder.
 
-## Outputs (what the agent produced)
+## Output: what the agent produced
 
-| Item | GitHub file |
-|---|---|
-| task.secrets_scope | hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.secrets_scope.md |
+| # | Output | What it is | Open |
+|---|---|---|---|
+| 1 | `task.secrets_scope` | Secrets granted for the task's environments (names only) | [Markdown](https://github.com/arghya05/hobasa-frontend-agent/blob/main/outputs/FEAT-ZD-48600/task.secrets_scope.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-frontend-agent/main/docs/FEAT-ZD-48600/FE-02_task-secrets_scope.html) · [PDF](https://github.com/arghya05/hobasa-frontend-agent/blob/main/docs/FEAT-ZD-48600/FE-02_task-secrets_scope.pdf) |
 
-## Code
-
-Repository `ap-portal-sample`, branch `feature/story`, commit `ff761ee`
+**Code:** repository [ap-portal-sample](https://github.com/arghya05/ap-portal-sample) · branch [feature/story](https://github.com/arghya05/ap-portal-sample/tree/feature/story) · commit [ff761ee](https://github.com/arghya05/ap-portal-sample/commit/ff761ee)
 
 ```
 no file changes in this step
 ```
 
+## Checks and approval
+
+| Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
+|---|---|---|---|---|
+| 1 | new | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 5, 'useful': 4} |
+
+Improvements the independent judge suggests (non-blocking):
+
+- Section 1 calls TSK-07 a 'pure render function' with no 'network call, API key, database or LLM access'. feat.tasks describes TSK-07 only by its goal, files in budget and implementation notes, and says 'No transport layer' under TSK-06, not TSK-07. The conclusion follows from the files-in-budget scope, but it would be clearer to mark it as an inference from that scope rather than cite it directly to feat.tasks TSK-07.
+- Section 2's environment rows (Local/CI, feature/<story> → dev, main) are the agent's own mapping of branches to environments, taken from file:ap_portal/CLAUDE.md. That file is not cited on those rows. Add the citation and say that the source gives no deployment environments, so the branches stand in for them.
+- The secret-reference search in section 1 cites only file:ap_portal/ci.mjs. Name the search scope (the whole ap_portal checkout, excluding .git) and the commit, so the gate can repeat it. Running the same search independently also finds only ci.mjs:4.
+
 ## How the agent worked
 
-- Approach: I read the TSK-07 Frontend task in feat.tasks to see what the change touches: one render helper, the version in package.json and the test file, with no transport. I checked that against the tool view for the restricted permission table, which says no secrets are required or granted for ap_portal. I then read the ap_portal source (index.js), the CI script (ci.mjs), package.json and the full test file (tests/portal.test.js) to confirm that nothing reads a secret. Required and granted secrets match (none on either side), so I raised no access request and wrote task.secrets_scope in full with names only.
-- Tools used: Skill:frontend-steps, Read, Grep, Glob, Write
-- Helper subagents: none
-- Connector calls: none
+- **Approach:** I read the TSK-07 definition in feat.tasks to see what the Frontend task needs: a pure render function in ap_portal with no transport layer. I took the granted secrets from the tool view, which reflects the restricted permission table; I referred to that table only and did not quote it. To check that nothing in the repository needs a secret, I read package.json and ci.mjs and searched the repository for environment-variable and secret-like names (case-insensitive). Required secrets (none) match granted secrets (none), so I raised no access request. I wrote task.secrets_scope with secret names only and no values.
+- **Tools used:** Skill:frontend-steps, Read, Grep, Glob, Write
+- **Helper subagents:** none
+- **Connector calls:** none
 
-## Attempts (checks before any person saw the output)
+## Files in this folder (audit trail)
 
-| Attempt | Session | Checks failed | Judge unsupported | Judge scores |
-|---|---|---|---|---|
-| 1 | new | 1 | — | — |
-| 2 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
-
-## Improvements the independent judge suggests (non-blocking, for the people at the gate)
-
-- Section 2 splits the grants into three environments (local/unit tests, dev, main), but the tool view only says no secrets are required or granted for the ap_portal repository as a whole. Say that the per-environment rows come from that repository-level statement. The dev/main branch names are in file:ap_portal/CLAUDE.md and feat.tasks section 2; cite those for the environment list.
-- The 'Transport, API or service call' row cites TSK-06 'Must not change' for a point about TSK-07's scope. Also citing TSK-07's own 'Must not change' and implementation notes (pure render helper, no row actions) would tie the claim to the frontend task directly.
-- The re-entry section says access requests go to 'the owner of the permission table' without naming that owner or the request channel (capability_request). It is marked as agent judgement, but naming the mechanism would make the step more actionable.
-
-Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
+- `brief_attempt<N>.md`: the exact brief the agent received
+- `result_attempt<N>.json`: the agent's structured answer (approach, tools, claims with their sources, open questions)
+- `checks_attempt<N>.json`: what the automated guardrail checks found
+- `judge_attempt<N>.json`, `judge_brief_attempt<N>.md`: the independent judge
+- `outputs/`: the outputs as approved
