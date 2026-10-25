@@ -9,8 +9,8 @@
 
 | Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
 |---|---|---|---|---|
-| feat.tasks | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-01/feat.tasks.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
-| org.engineering_stack | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-01/org.engineering_stack.md | hobasa-agentic-sdlc/org/org.engineering_stack.md | 3b03f15 | source |
+| feat.tasks | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-01/feat.tasks.md | final_document/e2e-run/runs/run-20261025-123936-feat-zd-48600/workspace/agents/hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
+| org.engineering_stack | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-01/org.engineering_stack.md | hobasa-agentic-sdlc/org/org.engineering_stack.md | b6a392f | source |
 
 Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
 
@@ -30,8 +30,8 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: I read both contracted inputs. feat.tasks gives TSK-07 as the Frontend task on ap_portal, and org.engineering_stack gives the stack, CI command and branches. The G9 hook does not allow shell commands in FE-01, so I checked the repository by reading its files. I read .git/HEAD, the main, dev and feature/story refs and the feature/story reflog. I also read CLAUDE.md, package.json, ci.mjs, the exports and VERSION in src/ap_portal/index.js, and tests/portal.test.js. I checked what I found against the step's tool view, which confirms write access and a clean tree. Then I rewrote task.repo_access.md in full. Every citation in it points to an input, the tool view, the brief, the shared memory or a repository file read in this session. I used no connector because the inputs and the repository files held every fact I needed.
-- Tools used: Skill (frontend-steps), Read, Glob, Grep, Write
+- Approach: I followed the FE-01 procedure in the frontend-steps skill. From feat.tasks I found the Frontend lane's single task, TSK-07, which is in ap_portal. I took the stack, CI command and branch rules from org.engineering_stack. The hook (G9) does not allow shell commands in FE-01, so I checked access using the step's tool view (tool:repo-access) and read-only Reads of every repository file I cite: .git/HEAD, the feature/story reflog, ci.mjs, package.json, CLAUDE.md, src/ap_portal/index.js and tests/portal.test.js. I rewrote task.repo_access.md in full and kept the tool-result section the spine had recorded in the file. I did not push, merge or run CI.
+- Tools used: Skill:frontend-steps, Read, Grep, Glob, Write
 - Helper subagents: none
 - Connector calls: none
 
@@ -39,14 +39,14 @@ no file changes in this step
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 1 | — | — |
-| 2 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
+| 1 | new | 2 | — | — |
+| 2 | resumed | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 5, 'useful': 4} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- Line 62 is a stray tool-result line pasted into the output: "[Tool result] [ap_portal] Branch feature/story at ff761ee; write access confirmed". It matches the tool view, but it is a raw artifact, not part of the document. Remove it, or fold it into the evidence table as a citation to tool:repo-access.
-- Section 2, CI checks row: the list of pass conditions leaves out two of them. ci.mjs line 17 also requires `compile` (every `node --check` passes) and `r.status === 0` (the test process exits with 0). Add both so the list is complete.
-- RA-2 says shell commands are not allowed in FE-01 but cites no source. The restriction is real (a step guard enforces it), but the note should name where it comes from, for example the step's tool restrictions or guard, to stay consistent with the 'cite every claim' convention.
-- Write access rests only on the tool view, and the output says so in RA-2. It could also record that the spine identity created the branch: file:ap_portal/.git/logs/refs/heads/feature/story shows 'Hobasa Agent Spine' with 'branch: Created from HEAD' at ff761ee. That is corroborating evidence from a file the agent already read.
+- Section 1, 'Branch base' row: the cited reflog (file:ap_portal/.git/logs/refs/heads/feature/story) only says 'branch: Created from HEAD' at ff761ee; it does not name `dev`. Only tool:repo-access says the branch came from dev. Make the reflog citation cover just the commit, or say that `dev` comes from the tool view.
+- Section 5 says 'Shell commands are not permitted in FE-01' with no citation. The harness does enforce it (hook message 'G9: step FE-01 may run only no shell commands'), but no file the agent read says so. Cite the source or label it as a step constraint from the run environment.
+- Write access and the clean working tree rest only on the tool view and the spine tool result ('write access confirmed'). That is enough for this step, but the output could say plainly that remote push permission was not tested independently.
+- RAQ-1 (`feature/story` vs `feature/STORY-07`) is a good catch. Also flag it to whoever owns the spine's branch naming, since feat.tasks section 2 and ap_portal/CLAUDE.md both expect `feature/<story>`.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
