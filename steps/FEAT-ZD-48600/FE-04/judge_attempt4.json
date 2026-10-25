@@ -1,32 +1,19 @@
 {
-  "unsupported": [
-    {
-      "text": "Attempts 1 to 3 were refused because `file:ap_portal/...` citations did not resolve. ... The code and documentation have not changed since attempt 1.",
-      "why": "record:brief records only the most recent refusal: five G2 points for file:ap_portal citations. No source gives the reasons for the earlier attempts or says the code and docs are unchanged since attempt 1. In FE-03, a revision note that described refusals the brief does not record was rejected for this same reason (JOURNEY row 27)."
-    },
-    {
-      "text": "In attempt 1, an independent read-only verifier also read the code and reached the same result.",
-      "why": "No source records a verifier run in an earlier attempt or what it found. This is a claim about earlier work that no source supports."
-    },
-    {
-      "text": "CQ-4: `file:ap_portal/...` citations did not resolve in attempts 1 to 3, even after the files were opened with Read.",
-      "why": "This contradicts record:brief. Its refusal reasons say \"the agent never read that file in this session\" for package.json, ci.mjs, README.md, docs/ap_portal.md and CLAUDE.md. No source records the reads in attempts 1 to 3."
-    }
-  ],
+  "unsupported": [],
   "improvements": [
-    "CI result (section 5): the brief says to run `node ci.mjs` until it passes, but the output reports passed=false. The cause is a real scope conflict: tests/ is outside the FE-04 write scope, yet the 90% coverage bar needs the FC-10/B4.5 tests. The output flags this well as CQ-1, but the gate should resolve it. Either widen FE-04's write scope to tests/portal.test.js, which the TSK-07 'Files in budget' in task.components includes, or accept a coverage-only failure.",
-    "The CI figures (56.45 line, 100.00 branch, 37.50 function, uncovered 23-25/29-35/38-40/43-49/54-60) appear in no source the judge can see. They do match the current index.js: 35 of 62 lines covered gives 56.45%, and 3 of 8 functions gives 37.5%. Attach or quote the CI JSON line so the result can be checked directly. The same goes for the `git diff --stat` counts (51/2 and 13).",
-    "'This step's tool policy allows only `node ci.mjs` and git read commands' is not stated in record:brief. Either cite where that restriction comes from or call it an observation from this session.",
-    "'Every new function, and the DECIMAL_STRING pattern, has a one-line comment' does not quite match the code. toTwoDecimalString has a two-line comment and renderOverdueRisk has a three-line comment. Say 'a short comment' instead.",
-    "The output file ends with a stray line '[Tool result] [ap_portal] Sources compile' after the open questions. Remove it.",
-    "package.json is still at version 2.3.0 while VERSION is 2.4.0 (CQ-2). The version check now fails, which task.components FC-9 and feat.tasks require. Put this in front of the gate together with CQ-1.",
-    "Drop the history in the revision note and CQ-4. The current brief already gives the reason for the change, so cite only that refusal."
+    "Delete the stray line at the end of the file, \"[Tool result] [ap_portal] Sources compile\". It is a tool artefact, not part of the record.",
+    "CI does not pass: line coverage is below the 90% bar. The brief says to run `node ci.mjs` until it passes, and the workbook outcome is an updated repo. The output explains that `tests/` is outside this step's write scope and logs the gap as CQ-FE-5. Still, the gate should know this step hands over a failing CI. Consider asking the spine to widen the scope to `tests/`, or to make FE-05 explicitly responsible for turning CI green.",
+    "Line 48 says feat.design B4.4 requires every `TypeError` to name its field. B4.4 says \"`TypeError` naming the field\" only for the amount case. The `rows` and `days` messages are the agent's own choice and should be marked as agent judgement.",
+    "`package.json` still has `\"version\": \"2.3.0\"` while `VERSION` is `'2.4.0'`. TK-07.5 and task.components 3.3 require both to move together. This is listed as CQ-FE-4, but the version mismatch should also go to the gate as a release risk (FE-06 commits both files).",
+    "task.components item 1 plans \"two constants\". The code adds four (`HTML_ESCAPES` and `DECIMAL_STRING` as well). The output explains this as agent judgement but does not say it departs from the FE-03 count. Name the deviation so the reviewer can accept it.",
+    "Section 4 gives no figures. A coverage percentage taken word for word from the `node ci.mjs` JSON, cited to that tool view, would let the gate see how big the coverage gap is.",
+    "Section 1 and the CI table cite `git status --short` and `node ci.mjs` runs. The judge could not re-run them because shell is blocked for this step. Attach the saved tool outputs so the claims can be checked."
   ],
   "scores": {
     "correct": 4,
-    "complete": 4,
-    "grounded": 4,
+    "complete": 3,
+    "grounded": 5,
     "useful": 4
   },
-  "notes": "The implementation claims hold up. I checked them against the actual ap_portal/src/ap_portal/index.js, which matches the tool view. FC-1 to FC-8, the AC-07.1 to AC-07.10 mapping, the FS-1 rendering, escaping, string-only amount padding, the allow-list row class, TypeError paths and exports all match the code, feat.design B4, feat.screens and feat.stories STORY-07. README.md and docs/ap_portal.md exist and match how section 4 describes them. package.json is indeed still 2.3.0. I could not re-run CI because shell is blocked for FE-04 under G9. The reported CI figures are consistent with the code's line and function counts, and nothing in the tool view contradicts them. The output is honest that CI fails on coverage only, and explains why: tests are outside the write scope. That is a real conflict between the brief's write scope and its 'until it passes' instruction. The only hallucinations are in the revision note and CQ-4. They describe earlier attempts and an earlier verifier run that no source records, and CQ-4's 'even after the files were opened with Read' contradicts the brief's refusal reason."
+  "notes": "I checked task.code.md against src/ap_portal/index.js (the tool view), docs/ap_portal.md, README.md, CLAUDE.md, package.json, ci.mjs, task.components, feat.design B4, feat.screens, feat.stories STORY-07 and org.design_library. Every statement is supported:\n- The items in sections 1 and 2 match the code: the four new constants, three private helpers, `renderOverdueRisk`, the exports, VERSION 2.4.0 and the header comment.\n- Comment placement and STORY-07 tagging are correct. DECIMAL_STRING has no story ID, as the output says.\n- The FS-1 expected output matches the feat.screens markup.\n- The TypeError messages name rows, days and amount.\n- The no-console.log/eval and 140-character rules hold for every line.\n- The existing tests (in the tool view) call only formatAmount and renderAgingSummary, so coverage below 90% is consistent. The previous refusal's quoted run (compile true, 2 tests, 0 failures, no static issues) agrees with the CI table.\n- FE-05/FE-06 roles match the agent's own README.\n- The docs examples ('5' \u2192 '5.00', the escaping example, the TypeError cases) follow from the code.\nI found no invented numbers, dates or versions.\n\nMain gaps:\n- CI fails on coverage at the end of this step. This is disclosed and explained by the write-scope limit.\n- The package.json version is out of step with VERSION.\n- A stray tool-result line sits at the end of the file.\n- B4.4's \\\"naming the field\\\" is applied to all three errors; the source states it only for the amount.\nI could not re-run `node ci.mjs` or git: the hook blocked shell for this step."
 }

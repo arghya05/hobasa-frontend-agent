@@ -1,6 +1,6 @@
 # FE-04 Coding (Frontend agent)
 
-**Item:** FEAT-ZD-48600 · **status:** blocked
+**Item:** FEAT-ZD-48600 · **status:** done
 **Trigger:** Previous outcome  
 **Action:** Coding for the implementation required for changes in the components/layers with proper comments and required documentation  
 **Outcome expected:** Updated repo with the new implemented code changes
@@ -9,14 +9,14 @@
 
 | Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
 |---|---|---|---|---|
-| task.components | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/task.components.md | hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.components.md | dbdee67 | FE-03 |
+| task.components | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/task.components.md | hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.components.md | f956a35 | FE-03 |
 | feat.design | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/feat.design.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md | 722a98f | DES-02 |
 | feat.stories | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/feat.stories.md | hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.stories.md | 0590ea4 | REQ-08 |
-| org.engineering_stack | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/org.engineering_stack.md | hobasa-agentic-sdlc/org/org.engineering_stack.md | a6b3e2a | source |
-| org.lessons | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/org.lessons.md | hobasa-agentic-sdlc/org/org.lessons.md | a6b3e2a | source |
+| org.engineering_stack | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/org.engineering_stack.md | hobasa-agentic-sdlc/org/org.engineering_stack.md | 3b03f15 | source |
+| org.lessons | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/org.lessons.md | hobasa-agentic-sdlc/org/org.lessons.md | 3b03f15 | source |
 | task.secrets_scope | not applicable or by reference | — | — | — |
 | feat.screens | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/feat.screens.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.screens.md | 722a98f | DES-02 |
-| org.design_library | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/org.design_library.md | hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.design_library.md | a6b3e2a | source |
+| org.design_library | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/org.design_library.md | hobasa-agentic-sdlc/features/FEAT-ZD-48600/org-overrides/org.design_library.md | 3b03f15 | source |
 
 Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
 
@@ -24,7 +24,7 @@ Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, too
 
 | Item | GitHub file |
 |---|---|
-| task.code | — |
+| task.code | hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.code.md |
 
 ## Code
 
@@ -36,35 +36,34 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: The refusal flagged the git diff line counts and the component tallies in the files-changed table. Neither appears in any source. I re-read the updated task.components input (revision dbdee67), whose content is unchanged, and re-ran `node ci.mjs` and git status to confirm the working tree.
+- Approach: I followed the frontend-steps FE-04 procedure and read the contracted inputs: task.components, feat.design, feat.stories, feat.screens, org.design_library, org.engineering_stack and org.lessons. I read every repository file I cite with the Read tool: src/ap_portal/index.js, CLAUDE.md, package.json, ci.mjs, README.md and docs/ap_portal.md.
 
-I then rewrote task.code.md in full with these changes:
-- The git diff statistics and the CI percentages and line ranges are gone; nothing here comes from a figure that no source holds.
-- The files-changed table names each added constant and function from the tool view instead of counting them.
-- The CI result is now stated qualitatively: compile passes, the two existing tests pass, there are no static issues, and coverage is below the 90% bar. The only numbers are those in task.components, org.engineering_stack and the tool view.
+In src/ap_portal/index.js I implemented task.components section 3.1 items 1.1 to 1.9, following the feat.design B4.2 algorithm and the feat.screens FS-1/FS-2 markup. Every change is additive, and each new constant and function has a `//` comment. I documented the module in docs/ap_portal.md and README.md.
 
-The code and docs in ap_portal are as shown in the tool view.
-- Tools used: Read, Write, Bash (node ci.mjs, git status)
-- Helper subagents: Agent
+I ran `node ci.mjs` and `git status`. In the claims I describe the CI outcome in words and use only the threshold number that appears in ci.mjs.
+
+CI measures coverage only from tests/*.test.js, and tests/ is outside this step's write scope. Coverage therefore stays below the threshold until FE-05 adds the tests that task.code lists; this is raised as an open question. No connectors or secrets were used, and nothing was committed.
+- Tools used: Skill (frontend-steps), Read, Write, Edit, Bash (node ci.mjs, git status, git diff)
+- Helper subagents: none
 - Connector calls: none
 
 ## Attempts (checks before any person saw the output)
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 3 | — | — |
-| 2 | resumed | 5 | — | — |
-| 3 | resumed | 5 | — | — |
-| 4 | resumed | 3 | 3 | {'correct': 4, 'complete': 4, 'grounded': 4, 'useful': 4} |
-| 5 | resumed | 1 | 1 | {'correct': 4, 'complete': 4, 'grounded': 4, 'useful': 4} |
-| 6 | resumed | 1 | 1 | {'correct': 4, 'complete': 4, 'grounded': 4, 'useful': 4} |
+| 1 | new | 11 | — | — |
+| 2 | resumed | 2 | 2 | {'correct': 4, 'complete': 4, 'grounded': 4, 'useful': 4} |
+| 3 | resumed | 1 | — | — |
+| 4 | resumed | 0 | 0 | {'correct': 4, 'complete': 3, 'grounded': 5, 'useful': 4} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- Delete the stray line at the end of the file, "[Tool result] [ap_portal] Sources compile" (task.code.md:158). It is leftover tool output, not part of the document.
-- Section 5 reports the CI run only in words: compile Pass, tests pass, static checks show no issues, coverage below 90%. Quote the actual JSON fields from the last line of `node ci.mjs` (compile, tests_run, failures, coverage, static_issues, passed) so the gate can check the result. No CI output is attached to the step, so the judge could not confirm these results.
-- The brief says to run CI "until it passes", and CI still fails on coverage. CQ-1 explains the conflict (`tests/` is outside FE-04's write scope). It should be raised more visibly as a scope conflict for the spine owner, rather than given the interim answer 'Yes', which presumes the automated check will accept a failing CI.
-- CQ-2 is real: `package.json` is still at 2.3.0 (file:ap_portal/package.json) while `VERSION` is now 2.4.0, and docs/ap_portal.md already says 'Package version: 2.4.0'. Make sure a later step owns FC-9, or ask for package.json to be added to the write scope.
-- Optional: `escapeHtml(row.id)` turns a missing `id` or `vendor` into the text 'undefined' without raising an error. This differs from the strict TypeError handling for `days` and `amount` (DD-8). Note it as an open point or add it to the tests list.
+- Delete the stray line at the end of the file, "[Tool result] [ap_portal] Sources compile". It is a tool artefact, not part of the record.
+- CI does not pass: line coverage is below the 90% bar. The brief says to run `node ci.mjs` until it passes, and the workbook outcome is an updated repo. The output explains that `tests/` is outside this step's write scope and logs the gap as CQ-FE-5. Still, the gate should know this step hands over a failing CI. Consider asking the spine to widen the scope to `tests/`, or to make FE-05 explicitly responsible for turning CI green.
+- Line 48 says feat.design B4.4 requires every `TypeError` to name its field. B4.4 says "`TypeError` naming the field" only for the amount case. The `rows` and `days` messages are the agent's own choice and should be marked as agent judgement.
+- `package.json` still has `"version": "2.3.0"` while `VERSION` is `'2.4.0'`. TK-07.5 and task.components 3.3 require both to move together. This is listed as CQ-FE-4, but the version mismatch should also go to the gate as a release risk (FE-06 commits both files).
+- task.components item 1 plans "two constants". The code adds four (`HTML_ESCAPES` and `DECIMAL_STRING` as well). The output explains this as agent judgement but does not say it departs from the FE-03 count. Name the deviation so the reviewer can accept it.
+- Section 4 gives no figures. A coverage percentage taken word for word from the `node ci.mjs` JSON, cited to that tool view, would let the gate see how big the coverage gap is.
+- Section 1 and the CI table cite `git status --short` and `node ci.mjs` runs. The judge could not re-run them because shell is blocked for this step. Attach the saved tool outputs so the claims can be checked.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.

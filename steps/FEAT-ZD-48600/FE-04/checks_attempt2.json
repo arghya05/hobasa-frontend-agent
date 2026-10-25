@@ -1,9 +1,6 @@
 {
   "failures": [
-    "G2 claim cites file:ap_portal/package.json but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/ci.mjs but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/README.md but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/docs/ap_portal.md but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/CLAUDE.md but the agent never read that file in this session"
+    "G1 judge found an unsupported statement: \"`git diff --stat` reports `README.md` with 7 insertions and `src/ap_portal/index.js` with 50 insertions and 3 deletions.\" (The index.js figure does not match the code. Before the change the file had 15 lines (envs/dev/ap_portal/ap_portal/index.js, which matches the module contents t)",
+    "G1 judge found an unsupported statement: \"Each new constant and function has a short comment above it, in the one-line `//` style the module already uses.\" (This contradicts the code. In file:ap_portal/src/ap_portal/index.js, the new constant `HTML_ESCAPES` (line 10) has no comment: line 8 is the comment for `OVERDU)"
   ]
 }
