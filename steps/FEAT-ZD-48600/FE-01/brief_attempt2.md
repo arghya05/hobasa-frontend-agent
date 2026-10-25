@@ -1,12 +1,6 @@
-Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again.
+Your previous result for this step was refused. Fix every point, rewrite the output files in full, and return the structured result again. The outputs describe the work itself: never mention earlier attempts, refusals or this review in them.
 
 ## Refusal reasons
-G2 claim cites file:ap_portal/.git/HEAD but the agent never read that file in this session
-G2 claim cites file:ap_portal/package.json but the agent never read that file in this session
-G2 claim cites file:ap_portal/ci.mjs but the agent never read that file in this session
-G2 claim cites file:ap_portal/src/ap_portal/index.js but the agent never read that file in this session
-G2 claim cites file:ap_portal/package.json but the agent never read that file in this session
-G2 claim cites file:ap_portal/src/ap_portal/index.js but the agent never read that file in this session
 G2 claim cites file:ap_portal/CLAUDE.md but the agent never read that file in this session
 
 ## Step brief (unchanged except the attempt number)
@@ -20,7 +14,7 @@ G2 claim cites file:ap_portal/CLAUDE.md but the agent never read that file in th
 
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
 - feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-01/feat.tasks.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
-- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-01/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit a6b3e2a)
+- org.engineering_stack (Repositories, languages, versions and exact commands): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-01/org.engineering_stack.md` (from hobasa-agentic-sdlc/org/org.engineering_stack.md at commit 3b03f15)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.repo_access (Repository (and Databricks) availability and write access): write `hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.repo_access.md`
