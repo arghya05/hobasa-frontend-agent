@@ -10,10 +10,10 @@ Identify the components/layers that needs to be created/updated with minimum lin
 ## Inputs (GitHub checkout; read them with Read, or context_get for a receipt)
 - feat.tasks (Engineering tasks with goal, AC, dependencies and size budget): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.tasks.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md at commit b0fd4d2)
 - feat.stories (Epics, stories and tasks with numbered AC, frame links, assumptions and open items (latest revision)): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.stories.md` (from hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.stories.md at commit 0590ea4)
-- feat.prd (Approved PRD): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.prd.md` (from hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.prd.md at commit 908b58d)
+- feat.prd (Approved PRD): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.prd.md` (from final_document/e2e-run/runs/run-20261025-111239-feat-zd-48600/workspace/agents/hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.prd.md at commit 908b58d)
 - feat.trd (Approved TRD): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.trd.md` (from hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.trd.md at commit 3637e51)
 - feat.design (HLD, LLD and contracts): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.design.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md at commit 722a98f)
-- task.repo_access (Repository (and Databricks) availability and write access): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/task.repo_access.md` (from hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.repo_access.md at commit c7b4be8)
+- task.repo_access (Repository (and Databricks) availability and write access): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/task.repo_access.md` (from hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.repo_access.md at commit cec63e8)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.components (Components, layers, sources or pipelines to change): write `hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.components.md`
