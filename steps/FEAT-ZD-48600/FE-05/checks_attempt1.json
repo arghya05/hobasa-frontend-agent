@@ -1,0 +1,6 @@
+{
+  "failures": [
+    "G3 numbers ['15', '100'] in \"After the new tests, node ci.mjs reports compile true, 15 tests run, 0 failures, 0 errors, coverage \" do not appear in tool:repo; file:ap_portal/ci.mjs",
+    "G2 claim cites mcp:codegraph but that connector was not used in this session"
+  ]
+}

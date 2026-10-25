@@ -1,0 +1,6 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"The coverage report for `src/ap_portal/index.js` shows 100.00% of lines, branches and functions covered, with no uncovered lines.\" (The only recorded CI result is the spine tool result \"Unit tests: 15 run, 0 failing; coverage 100%\", and ci.mjs computes `coverage` from the '# all files' line-)",
+    "G1 judge found an unsupported statement: \"SYN-INV-002 (42 days) is passed before SYN-INV-001 (31 days) and stays first, which shows the function does not re-sort\" (This contradicts the test in tool:repo. The input is already in descending `days` order, which is the ap_aging sort order (feat.stories AC-05.6: `days` descendi)"
+  ]
+}
