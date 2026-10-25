@@ -1,3 +1,5 @@
 {
-  "failures": []
+  "failures": [
+    "G1 judge found an unsupported statement: \"The step's hook blocked shell commands, so nothing was run; the code was read with file reads only (record:brief).\" (The cited brief says nothing about a hook or a ban on shell commands. The statement is true: the evaluator's own Bash call was blocked with \"G9: step FE-03 may )"
+  ]
 }

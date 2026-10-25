@@ -39,20 +39,20 @@ no file changes in this step
 
 | Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 5} |
+| 1 | new | 1 | 1 | {'correct': 5, 'complete': 5, 'grounded': 4, 'useful': 5} |
+| 2 | continued | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 5, 'useful': 5} |
 
 Improvements the independent judge suggests (non-blocking):
 
-- The workbook asks for the change 'with minimum lines of code', but the output gives no size for the change. A rough line estimate per component (C-FE-1 to C-FE-10) would make the claim checkable at FE-04.
-- In 'How this keeps the change small' item 1, 'ci.mjs would also have to compile it' makes this sound like extra work. ci.mjs already runs `node --check` on every .js file in src/ap_portal automatically, so a new file needs no CI change. The real reason to keep one file is feat.design DD-2, which puts renderOverdueRisk in index.js. Say that instead.
-- AC-07.9 (no Risk column or risk text, no row actions) and NFR-10 (no 'Late' wording) have no test in the section 4 coverage table. Consider an assertion in `renders overdue risk table` that the output contains no 'Risk' or 'Late' heading.
-- The B4.5 escaping test covers only `<`, `&` and `"`, but AC-07.7 also requires `>` and `'`. Consider adding them so every entry in the escape map is checked.
-- In the section 5 traceability table, the C-FE-2/C-FE-6 row links AC-07.9 to T-12 and T-13. No TRD test covers AC-07.9 (feat.stories maps NFR-6 / AC-07.9 to '—'). Split that row so the gap is visible.
+- CQ-FE-1 (a missing or non-string id/vendor renders as the text 'undefined') is marked non-blocking because feat.design B4.2 gives an interim answer (String(value)). That reading is defensible. Still, it makes the person at the gate confirm on purpose that rendering 'undefined' is acceptable, instead of the agent settling it in FE-04.
+- The output says FC-8/FC-9 move VERSION 'one minor step from 2.3.0' and that the lane confirms the number. It could state the candidate value (2.4.0) as the proposal TK-07.5 asks for, marked as agent judgement and pending confirmation, so FE-04 has a concrete target.
+- 'Minimum lines of code' is argued in words (one module, additive, no new file) but given no rough size. An approximate count of new lines per component, marked as agent judgement, would make the 'minimum' claim easier to check at the gate.
+- Section 5 says 'The table template is split across lines where needed'. That is a coding instruction rather than a component; it could be labelled agent judgement like the other design choices.
 
 ## How the agent worked
 
-- **Approach:** I used the frontend-steps FE-03 procedure. First I read feat.tasks (TSK-07), feat.design (B4 LLD, CT-1, DD-5, DD-8) and task.repo_access in full. From feat.stories, feat.prd and feat.trd I searched only the STORY-07, AC-19 to AC-21 and IF-7 / T-12 to T-16 parts. Then I read the existing ap_portal code: the index.js and test views, ci.mjs, package.json and README. I asked codegraph which code depends on the existing exports. From that I listed the smallest set of changes: two constants, three private helpers and one exported function, all appended in index.js. Two existing lines change (VERSION and module.exports), plus the package.json version and new tests. There are no new files and no edits to existing logic. A verifier subagent checked the draft against its sources. I fixed one citation and one overreach it found, and marked the codegraph test-coverage remark as agent judgement. A shell check was blocked by the step's G9 guardrail, so I read the files with Read and Glob instead.
-- **Tools used:** Skill(frontend-steps), Read, Grep, Glob, mcp:codegraph (codegraph_explore), Agent(verifier), Write, Edit
+- **Approach:** I used the FE-03 procedure from the frontend-steps skill. First I read the contracted inputs: feat.tasks, feat.stories, feat.design and task.repo_access in full, and the frontend-relevant parts of feat.prd and feat.trd (IF-7, F-12 to F-14, T-12 to T-16, AC-19 to AC-21, NFR-3/7/10). Then I read the whole ap_portal checkout with Read and Glob: index.js, portal.test.js, package.json, ci.mjs, README.md and CLAUDE.md. That gave me the existing layer, exports, callers and CI rules. I mapped the TSK-07 / feat.design B4 components onto the single existing view-helper module and picked the smallest additive change. Everything stays in index.js: one new export, private helpers, two constants, a version step and new tests, with no new file or layer. The verifier subagent had checked the earlier content against its sources. In this rewrite I took out the unsupported statement about how the code was read and kept only facts the sources support. I did not use codegraph, because the repository is one small module plus one test file and I read all of it directly.
+- **Tools used:** Skill (frontend-steps), Read, Grep, Glob, Write, Agent (verifier)
 - **Helper subagents:** Agent
 - **Connector calls:** none
 

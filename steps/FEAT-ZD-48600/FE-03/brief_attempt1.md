@@ -13,7 +13,7 @@ Identify the components/layers that needs to be created/updated with minimum lin
 - feat.prd (Approved PRD): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.prd.md` (from hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.prd.md at commit 908b58d)
 - feat.trd (Approved TRD): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.trd.md` (from hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.trd.md at commit 3637e51)
 - feat.design (HLD, LLD and contracts): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.design.md` (from hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md at commit 722a98f)
-- task.repo_access (Repository (and Databricks) availability and write access): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/task.repo_access.md` (from hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.repo_access.md at commit 0097a2b)
+- task.repo_access (Repository (and Databricks) availability and write access): `hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/task.repo_access.md` (from hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.repo_access.md at commit daae080)
 
 ## Outputs (write each file in full; the spine commits and pushes after evaluation and approval)
 - task.components (Components, layers, sources or pipelines to change): write `hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.components.md`
@@ -59,4 +59,4 @@ test('renders every bucket in order', () => {
 });
 
 
-Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (BLOCKING: only when you cannot finish), summary.
+Finish with the structured result: approach, tools_used, claims (each citing an input item name, a tool view, api:<name>, mcp:<server>, file:<repository>/<path> for any other GitHub file you read, record:intake, record:owner_answer, record:memory or record:brief for this brief; a claim drawing on several sources lists them separated by ';'; every number must appear in what you cite), open questions (anything missing or unclear: BLOCKING: <what you need and who should answer>; never assume), summary.
