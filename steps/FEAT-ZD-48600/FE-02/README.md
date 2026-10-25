@@ -34,18 +34,20 @@ no file changes in this step
 
 | Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 5, 'useful': 4} |
+| 1 | new | 1 | — | — |
+| 2 | continued | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
 
 Improvements the independent judge suggests (non-blocking):
 
-- Section 1 calls TSK-07 a 'pure render function' with no 'network call, API key, database or LLM access'. feat.tasks describes TSK-07 only by its goal, files in budget and implementation notes, and says 'No transport layer' under TSK-06, not TSK-07. The conclusion follows from the files-in-budget scope, but it would be clearer to mark it as an inference from that scope rather than cite it directly to feat.tasks TSK-07.
-- Section 2's environment rows (Local/CI, feature/<story> → dev, main) are the agent's own mapping of branches to environments, taken from file:ap_portal/CLAUDE.md. That file is not cited on those rows. Add the citation and say that the source gives no deployment environments, so the branches stand in for them.
-- The secret-reference search in section 1 cites only file:ap_portal/ci.mjs. Name the search scope (the whole ap_portal checkout, excluding .git) and the commit, so the gate can repeat it. Running the same search independently also finds only ci.mjs:4.
+- Section 4 says FE-02 'must run again, because that would be a re-entry trigger' if a network call, registry-token dependency or deployed environment is added. No source defines the re-entry triggers (footnote ¹ in the workbook is not expanded anywhere the agent read). Label this as agent judgement, or point it to whoever owns the trigger list.
+- Section 4 does not say who an access request would go to, or through which channel (for example capability_request to the owner of org.permission_table), if a secret is needed later. Naming both would make the 'ask for access as needed' part of the action easier to act on.
+- The CI row says ci.mjs 'reads no named secret', which is true. It could also note that ci.mjs passes the whole of process.env to the test process. Any secret present in the CI host environment would therefore reach the tests, even though none is granted or read.
+- The environments 'local build, CI' in section 2 come from inference (ci.mjs and the CI bar in feat.tasks). Cite file:ap_portal/ci.mjs and feat.tasks section 2 (CI bar) next to tool:repo-access for that column.
 
 ## How the agent worked
 
-- **Approach:** I read the TSK-07 definition in feat.tasks to see what the Frontend task needs: a pure render function in ap_portal with no transport layer. I took the granted secrets from the tool view, which reflects the restricted permission table; I referred to that table only and did not quote it. To check that nothing in the repository needs a secret, I read package.json and ci.mjs and searched the repository for environment-variable and secret-like names (case-insensitive). Required secrets (none) match granted secrets (none), so I raised no access request. I wrote task.secrets_scope with secret names only and no values.
-- **Tools used:** Skill:frontend-steps, Read, Grep, Glob, Write
+- **Approach:** I followed the FE-02 procedure in the frontend-steps skill. First I read feat.tasks to find the Frontend task: TSK-07 in ap_portal, which renders HTML from given rows, uses no transport layer and touches only the files in its budget. The permission table is restricted, so I used the tool view's summary of it. Shell commands are blocked for FE-02, so I checked the ap_portal checkout with Glob, Grep and Read. I read src/ap_portal/index.js, package.json, ci.mjs and tests/portal.test.js in full to look for secret, token or environment use, dependencies and network calls. The task needs no secret and the permission table grants none, so there is no gap and I raised no access request. I wrote task.secrets_scope with secret names only, which here means none.
+- **Tools used:** Skill (frontend-steps), Read, Glob, Grep, Write
 - **Helper subagents:** none
 - **Connector calls:** none
 
