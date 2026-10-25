@@ -1,105 +1,73 @@
 {
   "structured": {
-    "approach": "I followed the FE-03 procedure in the frontend-steps skill. I read all six contracted inputs, focusing on TSK-07, STORY-07, feat.design HC-8/HC-9 and B4, and feat.trd IF-7, F-12, F-13 and C-8/C-9. I then read every file in the ap_portal working tree: index.js and portal.test.js from the tool view, plus package.json, ci.mjs, README.md and CLAUDE.md. Shell commands are blocked in FE-03 (G9 hook), so I used Read and Glob instead of git. I mapped each change to one design item and kept everything inside the TSK-07 file budget. To keep the line count low, the new code follows renderAgingSummary's pattern (template literals plus map/join), the helpers stay private, there is no new file, and the days check sits inline. I kept the helpers the design names rather than inlining them. A verifier subagent checked the draft against its sources and flagged one problem: the header-comment edit had no source behind it. I fixed this by marking it as optional agent judgement.",
+    "approach": "I used the frontend-steps FE-03 procedure. First I read feat.tasks (TSK-07), feat.design (B4 LLD, CT-1, DD-5, DD-8) and task.repo_access in full. From feat.stories, feat.prd and feat.trd I searched only the STORY-07, AC-19 to AC-21 and IF-7 / T-12 to T-16 parts. Then I read the existing ap_portal code: the index.js and test views, ci.mjs, package.json and README. I asked codegraph which code depends on the existing exports. From that I listed the smallest set of changes: two constants, three private helpers and one exported function, all appended in index.js. Two existing lines change (VERSION and module.exports), plus the package.json version and new tests. There are no new files and no edits to existing logic. A verifier subagent checked the draft against its sources. I fixed one citation and one overreach it found, and marked the codegraph test-coverage remark as agent judgement. A shell check was blocked by the step's G9 guardrail, so I read the files with Read and Glob instead.",
     "tools_used": [
-      "Skill (frontend-steps)",
+      "Skill(frontend-steps)",
       "Read",
       "Grep",
       "Glob",
-      "Agent (verifier)",
+      "mcp:codegraph (codegraph_explore)",
+      "Agent(verifier)",
       "Write",
       "Edit"
     ],
     "claims": [
       {
-        "text": "The Frontend task is TSK-07 (STORY-07): render the overdue risk table SC-1 with renderOverdueRisk in ap_portal. Its files in budget are src/ap_portal/index.js, package.json (version only) and tests/portal.test.js.",
-        "source": "feat.tasks; task.repo_access"
+        "text": "ap_portal has one view-helper module, src/ap_portal/index.js. It exports VERSION, LABELS, formatAmount and renderAgingSummary, with VERSION = '2.3.0'.",
+        "source": "mcp:codegraph; tool:repo; file:ap_portal/package.json"
       },
       {
-        "text": "ap_portal has one source module, src/ap_portal/index.js. It exports VERSION, LABELS, formatAmount and renderAgingSummary, and VERSION is '2.3.0'.",
-        "source": "tool:repo; task.repo_access"
+        "text": "formatAmount uses Number(value || 0).toFixed(2), a binary-float path that conflicts with D-2026-044. renderOverdueRisk must not reuse it.",
+        "source": "mcp:codegraph; feat.trd; record:memory"
       },
       {
-        "text": "package.json holds \"version\": \"2.3.0\", which must move together with VERSION in index.js.",
-        "source": "file:ap_portal/package.json; feat.tasks"
-      },
-      {
-        "text": "The change to index.js is additive: constants RISK_CLASSES and OVERDUE_HEADINGS, private helpers escapeHtml, toTwoDecimalString and riskClass, an exported renderOverdueRisk, and the VERSION step. LABELS, formatAmount and renderAgingSummary stay unchanged.",
-        "source": "feat.design; feat.tasks"
-      },
-      {
-        "text": "formatAmount formats through Number(...).toFixed(2), which conflicts with D-2026-044. renderOverdueRisk must not use it, and the amount must never go through Number() or parseFloat.",
-        "source": "feat.trd; tool:repo; record:memory"
-      },
-      {
-        "text": "renderAgingSummary escapes nothing. renderOverdueRisk renders feed text, so it HTML-escapes id and vendor and allow-lists the row class.",
-        "source": "feat.trd; feat.design"
-      },
-      {
-        "text": "CI compiles every .js file in src/ap_portal and measures coverage over src/** with NODE_PATH=src. It passes only with coverage >= 90 and no failed test, and it flags any line with console.log or eval( or longer than 140 characters.",
+        "text": "CI compiles every .js file in src/ap_portal and runs node --test with NODE_PATH src. It requires line coverage >= 90, no console.log or eval( lines, and lines of at most 140 characters.",
         "source": "file:ap_portal/ci.mjs"
       },
       {
-        "text": "Empty input (undefined, null or []) returns ''. A non-array rows value, a non-integer days or an amount that is not a decimal string throws TypeError, and each of these branches needs its own test.",
+        "text": "The components to add in index.js are RISK_CLASSES, OVERDUE_HEADINGS, the private helpers escapeHtml, toTwoDecimalString and riskClass, and the exported renderOverdueRisk. module.exports gains renderOverdueRisk.",
         "source": "feat.design; feat.tasks"
       },
       {
-        "text": "No transport layer, host page, stylesheet or dependency is added. A transport between ap_aging and ap_portal would re-trigger DES-01.",
-        "source": "feat.design; tool:repo"
+        "text": "TSK-07's file budget is src/ap_portal/index.js, package.json (version only) and tests/portal.test.js. LABELS, formatAmount, renderAgingSummary and their tests must not change.",
+        "source": "feat.tasks; task.repo_access"
       },
       {
-        "text": "STORY-07 acceptance criteria AC-07.1 to AC-07.10 each map to a component item and a planned test.",
-        "source": "feat.stories; feat.design"
+        "text": "renderOverdueRisk returns '' for missing, null or [] rows. It throws TypeError for non-array rows, for a non-decimal-string amount and for a non-integer days value. It escapes id and vendor, and an unknown risk value gets the class risk-unknown.",
+        "source": "feat.design; feat.stories; feat.trd"
       },
       {
-        "text": "Existing public signatures are kept and new behaviour goes into new functions.",
-        "source": "file:ap_portal/CLAUDE.md; feat.design"
+        "text": "The new code goes between renderAgingSummary (ends at line 13) and module.exports (line 15). Of the existing lines, only VERSION (line 3) and module.exports (line 15) change.",
+        "source": "mcp:codegraph"
       },
       {
-        "text": "The README holds only the package description and the CI command, so it is not changed.",
-        "source": "file:ap_portal/README.md"
-      },
-      {
-        "text": "Monetary amounts are never converted to float (D-2026-044, L-011), and commit messages start with the story ID.",
-        "source": "record:memory"
-      },
-      {
-        "text": "The step's output is task.components, written for FE-03 with no human gate (automated checks, the independent judge and sampled human evaluation).",
-        "source": "record:brief"
-      },
-      {
-        "text": "Pending items TQ-7, TQ-11/OQ-B10, OQ-B8, TQ-6, OQ-B9/PQ-P7 and DQ-3 are carried with their interim designs and do not block this step.",
-        "source": "feat.trd; feat.stories; feat.design"
-      },
-      {
-        "text": "The working branch is feature/story rather than feature/STORY-07 (RA-1, carried).",
-        "source": "task.repo_access"
+        "text": "VERSION in index.js and \"version\" in package.json must move together as one minor version step. The lane confirms the number.",
+        "source": "feat.tasks; feat.design"
       }
     ],
     "open_questions": [
-      "CQ-FE-1: The risk-* row classes need styles to be visible, but ap_portal has no stylesheet and none is in the TSK-07 file budget. Who owns the styling? Interim answer: the function sets only the class, and styling stays with the host page.",
-      "CQ-FE-2: There are no approved Figma frames for SC-1 (Figma is not connected). Interim answer: follow feat.design B4.2 and, in FE-04, feat.screens.",
-      "CQ-FE-3: What is the exact next version number for VERSION and package.json \"version\"? Interim answer: a minor step, which the lane confirms in FE-04.",
-      "RA-1 (carried): Should the working branch be renamed from feature/story to feature/STORY-07? Interim answer: keep feature/story and start every commit message with STORY-07."
+      "CMQ-1 (non-blocking): Where are the overdue-risk and risk-* classes styled? ap_portal has no stylesheet and no input names a host page (related to DQ-1). Interim answer: TSK-07 only emits the classes.",
+      "CMQ-2 (non-blocking): Which exact version number should the minor step use? Interim answer: the lane confirms it at FE-04.",
+      "Carried, non-blocking: TQ-2, TQ-6, TQ-7, TQ-11/OQ-B10, OQ-B8, OQ-B9/PQ-P7, DQ-3, RAQ-1 (branch feature/story)."
     ],
-    "summary": "I wrote task.components for the Frontend lane of FEAT-ZD-48600 (TSK-07, STORY-07), and nothing blocks FE-04. Only three things change, all inside the TSK-07 file budget. In src/ap_portal/index.js: two constants (RISK_CLASSES, OVERDUE_HEADINGS), three private helpers (escapeHtml, toTwoDecimalString, riskClass), the exported renderOverdueRisk, the VERSION step and one more name in module.exports. Editing the header comment is an optional extra. In tests/portal.test.js: new tests appended, one per acceptance criterion and error branch. In package.json: the version field only. LABELS, formatAmount, renderAgingSummary, ci.mjs and the README stay unchanged, and no new file, layer, transport, stylesheet or dependency is added. To keep the line count low, the code reuses renderAgingSummary's template-literal map/join style, keeps the helpers private, avoids a new file and checks days inline. The file also lists the CT-1 fields the function consumes, the rules it must keep, the carried pending items, and four open questions on styling, Figma frames, the version number and the branch name. A verifier check found one problem, an unsourced header-comment edit, which I fixed by marking it as optional agent judgement."
+    "summary": "I wrote task.components for TSK-07 / STORY-07 in ap_portal. The change stays in TSK-07's three budgeted files and adds no new files. In src/ap_portal/index.js, two constants, three private helpers and the exported renderOverdueRisk are appended after renderAgingSummary. The only existing lines that change are VERSION and module.exports. package.json changes its version only, and tests/portal.test.js gets new tests covering every TypeError and empty-input branch so CI's 90% line-coverage bar holds. LABELS, formatAmount, renderAgingSummary and their tests stay unchanged. There are no blocking questions."
   },
   "meta": {
     "subtype": "success",
     "is_error": false,
     "num_turns": 24,
-    "session_id": "cb8a6e39-45b5-4fac-b985-d00534000b87",
-    "total_cost_usd": 1.6505161,
+    "session_id": "483ede86-f11d-4440-b06a-5c147490235b",
+    "total_cost_usd": 1.4428866,
     "permission_denials": [
       {
         "tool_name": "Bash",
-        "tool_use_id": "toolu_01L3VXTiPwBMBu8eyJKopGvW",
+        "tool_use_id": "toolu_013ccnHHPjxoQ5gEsLAAyoRP",
         "tool_input": {
-          "command": "git ls-files && cat package.json && cat ci.mjs && wc -l src/ap_portal/index.js tests/portal.test.js",
+          "command": "git ls-files && cat package.json ci.mjs && wc -l src/ap_portal/index.js tests/portal.test.js",
           "description": "List repo files and show package.json and CI script"
         }
       }
     ],
-    "result": "{\"approach\":\"I followed the FE-03 procedure in the frontend-steps skill. I read all six contracted inputs, focusing on TSK-07, STORY-07, feat.design HC-8/HC-9 and B4, and feat.trd IF-7, F-12, F-13 and C-8/C-9. I then read every file in the ap_portal working tree: index.js and portal.test.js from the tool view, plus package.json, ci.mjs, README.md and CLAUDE.md. Shell commands are blocked in FE-03 (G9 hook), so I used Read and Glob instead of git. I mapped each change to one design item and kept everything inside the TSK-07 file budget. To keep the line count low, the new code follows renderAgingSummary's pattern (template literals plus map/join), the helpers stay private, there is no new file, and the days check sits inline. I kept the helpers the design names rather than inlining them. A verifier subagent checked the draft against its sources and flagged one problem: the header-comment edit had no source behind it. I fixed this by marking it as optional agent judgement.\",\"tools_used\":[\"Skill (frontend-steps)\",\"Read\",\"Grep\",\"Glob\",\"Agent (verifier)\",\"Write\",\"Edit\"],\"claims\":[{\"text\":\"The Frontend task is TSK-07 (STORY-07): render the overdue risk table SC-1 with renderOverdueRisk in ap_portal. Its files in budget are src/ap_portal/index.js, package.json (version only) and tests/portal.test.js.\",\"source\":\"feat.tasks; task.repo_access\"},{\"text\":\"ap_portal has one source module, src/ap_portal/index.js. It exports VERSION, LABELS, formatAmount and renderAgingSummary, and VERSION is '2.3.0'.\",\"source\":\"tool:repo; task.repo_access\"},{\"text\":\"package.json holds \\\"version\\\": \\\"2.3.0\\\", which must move together with VERSION in index.js.\",\"source\":\"file:ap_portal/package.json; feat.tasks\"},{\"text\":\"The change to index.js is additive: constants RISK_CLASSES and OVERDUE_HEADINGS, private helpers escapeHtml, toTwoDecimalString and riskClass, an exported renderOverdueRisk, and the VERSION step. LABELS, formatAmount and renderAgingSummary stay unchanged.\",\"source\":\"feat.design; feat.tasks\"},{\"text\":\"formatAmount formats through Number(...).toFixed(2), which conflicts with D-2026-044. renderOverdueRisk must not use it, and the amount must never go through Number() or parseFloat.\",\"source\":\"feat.trd; tool:repo; record:memory\"},{\"text\":\"renderAgingSummary escapes nothing. renderOverdueRisk renders feed text, so it HTML-escapes id and vendor and allow-lists the row class.\",\"source\":\"feat.trd; feat.design\"},{\"text\":\"CI compiles every .js file in src/ap_portal and measures coverage over src/** with NODE_PATH=src. It passes only with coverage >= 90 and no failed test, and it flags any line with console.log or eval( or longer than 140 characters.\",\"source\":\"file:ap_portal/ci.mjs\"},{\"text\":\"Empty input (undefined, null or []) returns ''. A non-array rows value, a non-integer days or an amount that is not a decimal string throws TypeError, and each of these branches needs its own test.\",\"source\":\"feat.design; feat.tasks\"},{\"text\":\"No transport layer, host page, stylesheet or dependency is added. A transport between ap_aging and ap_portal would re-trigger DES-01.\",\"source\":\"feat.design; tool:repo\"},{\"text\":\"STORY-07 acceptance criteria AC-07.1 to AC-07.10 each map to a component item and a planned test.\",\"source\":\"feat.stories; feat.design\"},{\"text\":\"Existing public signatures are kept and new behaviour goes into new functions.\",\"source\":\"file:ap_portal/CLAUDE.md; feat.design\"},{\"text\":\"The README holds only the package description and the CI command, so it is not changed.\",\"source\":\"file:ap_portal/README.md\"},{\"text\":\"Monetary amounts are never converted to float (D-2026-044, L-011), and commit messages start with the story ID.\",\"source\":\"record:memory\"},{\"text\":\"The step's output is task.components, written for FE-03 with no human gate (automated checks, the independent judge and sampled human evaluation).\",\"source\":\"record:brief\"},{\"text\":\"Pending items TQ-7, TQ-11/OQ-B10, OQ-B8, TQ-6, OQ-B9/PQ-P7 and DQ-3 are carried with their interim designs and do not block this step.\",\"source\":\"feat.trd; feat.stories; feat.design\"},{\"text\":\"The working branch is feature/story rather than feature/STORY-07 (RA-1, carried).\",\"source\":\"task.repo_access\"}],\"open_questions\":[\"CQ-FE-1: The risk-* row classes need styles to be visible, but ap_portal has no stylesheet and none is in the TSK-07 file budget. Who owns the styling? Interim answer: the function sets only the class, and styling stays with the host page.\",\"CQ-FE-2: There are no approved Figma frames for SC-1 (Figma is not connected). Interim answer: follow feat.design B4.2 and, in FE-04, feat.screens.\",\"CQ-FE-3: What is the exact next version number for VERSION and package.json \\\"version\\\"? Interim answer: a minor step, which the lane confirms in FE-04.\",\"RA-1 (carried): Should the working branch be renamed from feature/story to feature/STORY-07? Interim answer: keep feature/story and start every commit message with STORY-07.\"],\"summary\":\"I wrote task.components for the Frontend lane of FEAT-ZD-48600 (TSK-07, STORY-07), and nothing blocks FE-04. Only three things change, all inside the TSK-07 file budget. In src/ap_portal/index.js: two constants (RISK_CLASSES, OVERDUE_HEADINGS), three private helpers (escapeHtml, toTwoDecimalString, riskClass), the exported renderOverdueRisk, the VERSION step and one more name in module.exports. Editing the header comment is an optional extra. In tests/portal.test.js: new tests appended, one per acceptance criterion and error branch. In package.json: the version field only. LABELS, formatAmount, renderAgingSummary, ci.mjs and the README stay unchanged, and no new file, layer, transport, stylesheet or dependency is added. To keep the line count low, the code reuses renderAgingSummary's template-literal map/join style, keeps the helpers private, avoids a new file and checks days inline. The file also lists the CT-1 fields the function consumes, the rules it must keep, the carried pending items, and four open questions on styling, Figma frames, the version number and the branch name. A verifier check found one problem, an unsourced header-comment edit, which I fixed by marking it as optional agent judgement.\"}"
+    "result": "{\"approach\":\"I used the frontend-steps FE-03 procedure. First I read feat.tasks (TSK-07), feat.design (B4 LLD, CT-1, DD-5, DD-8) and task.repo_access in full. From feat.stories, feat.prd and feat.trd I searched only the STORY-07, AC-19 to AC-21 and IF-7 / T-12 to T-16 parts. Then I read the existing ap_portal code: the index.js and test views, ci.mjs, package.json and README. I asked codegraph which code depends on the existing exports. From that I listed the smallest set of changes: two constants, three private helpers and one exported function, all appended in index.js. Two existing lines change (VERSION and module.exports), plus the package.json version and new tests. There are no new files and no edits to existing logic. A verifier subagent checked the draft against its sources. I fixed one citation and one overreach it found, and marked the codegraph test-coverage remark as agent judgement. A shell check was blocked by the step's G9 guardrail, so I read the files with Read and Glob instead.\",\"tools_used\":[\"Skill(frontend-steps)\",\"Read\",\"Grep\",\"Glob\",\"mcp:codegraph (codegraph_explore)\",\"Agent(verifier)\",\"Write\",\"Edit\"],\"claims\":[{\"text\":\"ap_portal has one view-helper module, src/ap_portal/index.js. It exports VERSION, LABELS, formatAmount and renderAgingSummary, with VERSION = '2.3.0'.\",\"source\":\"mcp:codegraph; tool:repo; file:ap_portal/package.json\"},{\"text\":\"formatAmount uses Number(value || 0).toFixed(2), a binary-float path that conflicts with D-2026-044. renderOverdueRisk must not reuse it.\",\"source\":\"mcp:codegraph; feat.trd; record:memory\"},{\"text\":\"CI compiles every .js file in src/ap_portal and runs node --test with NODE_PATH src. It requires line coverage >= 90, no console.log or eval( lines, and lines of at most 140 characters.\",\"source\":\"file:ap_portal/ci.mjs\"},{\"text\":\"The components to add in index.js are RISK_CLASSES, OVERDUE_HEADINGS, the private helpers escapeHtml, toTwoDecimalString and riskClass, and the exported renderOverdueRisk. module.exports gains renderOverdueRisk.\",\"source\":\"feat.design; feat.tasks\"},{\"text\":\"TSK-07's file budget is src/ap_portal/index.js, package.json (version only) and tests/portal.test.js. LABELS, formatAmount, renderAgingSummary and their tests must not change.\",\"source\":\"feat.tasks; task.repo_access\"},{\"text\":\"renderOverdueRisk returns '' for missing, null or [] rows. It throws TypeError for non-array rows, for a non-decimal-string amount and for a non-integer days value. It escapes id and vendor, and an unknown risk value gets the class risk-unknown.\",\"source\":\"feat.design; feat.stories; feat.trd\"},{\"text\":\"The new code goes between renderAgingSummary (ends at line 13) and module.exports (line 15). Of the existing lines, only VERSION (line 3) and module.exports (line 15) change.\",\"source\":\"mcp:codegraph\"},{\"text\":\"VERSION in index.js and \\\"version\\\" in package.json must move together as one minor version step. The lane confirms the number.\",\"source\":\"feat.tasks; feat.design\"}],\"open_questions\":[\"CMQ-1 (non-blocking): Where are the overdue-risk and risk-* classes styled? ap_portal has no stylesheet and no input names a host page (related to DQ-1). Interim answer: TSK-07 only emits the classes.\",\"CMQ-2 (non-blocking): Which exact version number should the minor step use? Interim answer: the lane confirms it at FE-04.\",\"Carried, non-blocking: TQ-2, TQ-6, TQ-7, TQ-11/OQ-B10, OQ-B8, OQ-B9/PQ-P7, DQ-3, RAQ-1 (branch feature/story).\"],\"summary\":\"I wrote task.components for TSK-07 / STORY-07 in ap_portal. The change stays in TSK-07's three budgeted files and adds no new files. In src/ap_portal/index.js, two constants, three private helpers and the exported renderOverdueRisk are appended after renderAgingSummary. The only existing lines that change are VERSION and module.exports. package.json changes its version only, and tests/portal.test.js gets new tests covering every TypeError and empty-input branch so CI's 90% line-coverage bar holds. LABELS, formatAmount, renderAgingSummary and their tests stay unchanged. There are no blocking questions.\"}"
   }
 }

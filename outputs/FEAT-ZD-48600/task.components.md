@@ -1,176 +1,125 @@
-# task.components: FEAT-ZD-48600 (Frontend lane)
+# task.components: FEAT-ZD-48600
 
-This file lists the components and layers of `ap_portal` that the Frontend task must create or update, and how to do it with the fewest lines of code. Step: FE-03, Identify the components/layers to be changed.
+Components and layers the Frontend lane will create or update for FEAT-ZD-48600 (ZD-48600, "Show which overdue invoices belong to vendors that usually pay late"). This is FE-03, attempt 1. The lane owns one task: TSK-07 / STORY-07, "Render the overdue risk table", in the ap_portal repository (feat.tasks, section 1; task.repo_access).
 
-Statements marked **agent judgement** are this agent's own reading of the code and inputs; no input states them as fact. This step changes no code. FE-04 does the coding.
+This step reads the existing code and lists the smallest set of changes that meets STORY-07. It changes no code; FE-04 writes the code. Statements marked **agent judgement** are this agent's proposals. No input states them as fact.
 
 | Field | Value | Source |
 |---|---|---|
 | Trace ID | FEAT-ZD-48600 | record:brief |
-| Step | FE-03 Identify the components/layers to be changed | record:brief |
-| Owner / gate | Developer / automated checks, independent judge, sampled human evaluation | record:brief |
-| Task in scope | TSK-07 (STORY-07): render the overdue risk table SC-1 with `renderOverdueRisk` | feat.tasks (sections 1 and 3, TSK-07); task.repo_access (header) |
-| Design component | HC-8 `renderOverdueRisk` (new); HC-9 `formatAmount`, `renderAgingSummary` (unchanged) | feat.design (A2, B4.1) |
-| Repository and branch | `ap_portal`, branch `feature/story` at `ff761ee`, write access confirmed | task.repo_access (section 1) |
-| Inputs read | feat.tasks, feat.stories, feat.prd, feat.trd, feat.design, task.repo_access | record:brief |
-| Code read | `src/ap_portal/index.js`, `tests/portal.test.js`, `package.json`, `ci.mjs`, `README.md`, `CLAUDE.md` | tool:repo; file:ap_portal/package.json; file:ap_portal/ci.mjs; file:ap_portal/README.md; file:ap_portal/CLAUDE.md |
+| Step | FE-03 Identify the components/layers to be changed (attempt 1) | record:brief |
+| Owner / gate | Developer / no gate: automated checks, the independent judge and sampled human evaluation | record:brief |
+| Inputs | feat.tasks (b0fd4d2), feat.stories (0590ea4), feat.prd (908b58d), feat.trd (3637e51), feat.design (722a98f), task.repo_access (0097a2b) | record:brief |
+| Task / story / HLD component | TSK-07 / STORY-07 / HC-8 (`renderOverdueRisk`) | feat.tasks (sections 1, 4); feat.design (A2) |
+| Repository / branch | ap_portal, `feature/story` at `ff761ee` | task.repo_access |
+| Code read | `src/ap_portal/index.js`, `tests/portal.test.js`, `package.json`, `ci.mjs`, `README.md`, `CLAUDE.md` | tool:repo; mcp:codegraph; file:ap_portal/ci.mjs; file:ap_portal/package.json; file:ap_portal/README.md; file:ap_portal/CLAUDE.md |
 
-## 1. Result
+## 1. What the existing code does
 
-**One source module, one test file and one version field change. No new file, no new layer and no new dependency is needed.**
+ap_portal has **one layer**: a stateless view-helper module that builds HTML strings. It has no routing, no state, no API client, no stylesheet and no build step. The checkout contains `CLAUDE.md`, `README.md`, `ci.mjs`, `package.json`, `src/ap_portal/index.js` and `tests/portal.test.js` (tool:repo; file:ap_portal/package.json).
 
-| # | Component / layer | File | Change | Source |
+| Symbol in `src/ap_portal/index.js` | Line | What it does | Depended on by | Source |
 |---|---|---|---|---|
-| 1 | View helper layer (the only runtime layer in ap_portal) | `src/ap_portal/index.js` | Update, additive: two constants, three private helpers, one exported function `renderOverdueRisk`, the `VERSION` step and one more name in `module.exports`; optionally the module header comment (agent judgement, item 1.1) | feat.design (B4.1, B4.2); feat.tasks (TSK-07); tool:repo |
-| 2 | Unit tests | `tests/portal.test.js` | Update, additive: new `node:test` tests appended; the two existing tests unchanged | feat.design (B4.5); feat.tasks (TSK-07); tool:repo |
-| 3 | Package metadata | `package.json` | Update: `"version"` only, moved together with `VERSION` | feat.tasks (section 2, TSK-07); file:ap_portal/package.json |
+| Header comment | 2 | "AP portal view helpers: render the aging summary returned by the ap_aging service as HTML." | — | mcp:codegraph |
+| `VERSION` | 3 | `'2.3.0'` (also `"version": "2.3.0"` in `package.json`) | Exported | mcp:codegraph; file:ap_portal/package.json |
+| `LABELS` | 4 | Bucket key → display label | `renderAgingSummary`; exported | mcp:codegraph |
+| `formatAmount(value)` | 6 | `Number(value \|\| 0).toFixed(2)`. This goes through a binary float, which conflicts with D-2026-044 | `renderAgingSummary`; exported; existing test | mcp:codegraph; feat.trd (F-12); record:memory |
+| `renderAgingSummary(buckets)` | 10 | `<table class="aging-summary">` from template strings. It escapes nothing; its labels are constants | Exported; existing test | mcp:codegraph; feat.trd (F-13) |
+| `module.exports` | 15 | `{ VERSION, LABELS, formatAmount, renderAgingSummary }` | Tests via `require('ap_portal')` | mcp:codegraph; tool:repo |
 
-Everything else in the repository stays unchanged (section 4).
+**Tests.** `tests/portal.test.js` uses `node:test` and `node:assert` and loads the package with `require('ap_portal')`. It has two tests: `formats amounts with two decimals` and `renders every bucket in order` (tool:repo).
 
-## 2. What exists today (code read)
+**Note on codegraph.** codegraph reports "no covering tests found" for `formatAmount` and `LABELS` (mcp:codegraph). Agent judgement: this is a false negative. Both are exercised by the existing tests, which load the module through `require('ap_portal')` with `NODE_PATH: 'src'`. The index most likely does not follow that resolution (file:ap_portal/ci.mjs; tool:repo).
 
-| Item | Today | Source |
-|---|---|---|
-| Runtime | Node.js 22, CommonJS; tests with `node:test` | file:ap_portal/CLAUDE.md; task.repo_access (section 2) |
-| Code and test folders | Code in `src/ap_portal/`, tests in `tests/`; version kept in `src/ap_portal/index.js` | file:ap_portal/CLAUDE.md |
-| Source files | One: `src/ap_portal/index.js` | task.repo_access (section 2); tool:repo |
-| Module contents | `'use strict'`; header comment "AP portal view helpers: render the aging summary returned by the ap_aging service as HTML."; `VERSION = '2.3.0'`; `LABELS`; `formatAmount(value)` (`Number(value \|\| 0).toFixed(2)`); `renderAgingSummary(buckets)` (template literal per row, `rows.join('')`, wrapped in `<table class="aging-summary">`) | tool:repo |
-| Exports | `{ VERSION, LABELS, formatAmount, renderAgingSummary }` | tool:repo |
-| Tests | `tests/portal.test.js`: `formats amounts with two decimals`; `renders every bucket in order`; the package is loaded with `require('ap_portal')` | tool:repo |
-| Package version | `"version": "2.3.0"` in `package.json` | file:ap_portal/package.json |
-| CI | `node ci.mjs`: `node --check` on every `.js` file in `src/ap_portal`; tests with `--experimental-test-coverage --test-coverage-include=src/**` and `NODE_PATH=src`; static checks fail a source line matching `console.log` or `eval(` or longer than 140 characters; passes only with coverage >= 90, no failed test and at least one test run | file:ap_portal/ci.mjs |
-| Layers not present | No transport or API client, no host page or routing, no stylesheet, no state store. `renderAgingSummary` takes a plain object and returns an HTML string | tool:repo; feat.design (A3 "Transport for CT-1", A1 UI boundary) |
+**CI binding.** `ci.mjs` runs `node --check` on every `.js` file in `src/ap_portal`, then `node --test` with coverage of `src/**` and `NODE_PATH: 'src'`. It requires line coverage `>= 90`, at least one test run, no failures, no line matching `console.log` or `eval(`, and no line longer than 140 characters (file:ap_portal/ci.mjs).
 
-Two findings from the code shape the change:
+## 2. Components to create or update (minimum change)
 
-- `formatAmount` formats through a binary float, which conflicts with D-2026-044. The new code must not call it; the existing helper stays unchanged (feat.trd F-12, TQ-2; record:memory D-2026-044).
-- `renderAgingSummary` escapes nothing. Its labels are constants, but the new table renders feed text (`id`, `vendor`), so that pattern must not be copied as it is (feat.trd F-13, R-8).
-
-## 3. Components to create or update, with the minimum-lines approach
-
-### 3.1 `src/ap_portal/index.js` (view helper layer)
-
-Everything below goes into the existing module, next to the existing code, as feat.design B4.1 places it (DD-2). New items are added after `LABELS` and after `renderAgingSummary`; no existing line is rewritten except `VERSION`, the `module.exports` line and, optionally, the header comment.
-
-| # | Item | Kind | Exported | What it does | Minimum-lines approach (agent judgement unless a source says otherwise) | Source |
+| # | File / layer | Component | Kind | Change | Why it is needed | Source |
 |---|---|---|---|---|---|---|
-| 1.1 | Header comment (line 2) | Update (agent judgement; optional) | — | Mention the overdue risk table next to the aging summary, so the module comment stays accurate | Edit the one existing comment line; no new doc block. Neither feat.design nor feat.tasks lists this edit; it is proposed for the Developer to accept or drop | tool:repo |
-| 1.2 | `VERSION` | Update | Yes (already) | Minor version step from `2.3.0`; the lane confirms the next number | Change the string literal only | feat.tasks (section 2, TSK-07); feat.trd (T-A6) |
-| 1.3 | `RISK_CLASSES` | New constant | No | Allow-list `['high', 'medium', 'low', 'unknown']` | One line | feat.design (B4.2, B4.3) |
-| 1.4 | `OVERDUE_HEADINGS` | New constant | No | `['Invoice', 'Vendor', 'Days overdue', 'Amount']` in order | One line; the header row is built from it with `map` + `join('')`, as `renderAgingSummary` builds its rows | feat.design (B4.2); feat.prd (AC-19); tool:repo |
-| 1.5 | `escapeHtml(value)` | New private helper | No | Escapes `&`, `<`, `>`, `"`, `'` | A single `String(value).replace(/[&<>"']/g, ...)` with a small lookup object | feat.design (B4.2, SE-2); feat.trd (IF-7.7) |
-| 1.6 | `toTwoDecimalString(value)` | New private helper | No | String-only amount: must be a string matching `^-?\d+(\.\d{1,2})?$`, padded to two decimals as a string (`"980.5"` → `980.50`); otherwise `TypeError`. Never `Number()`, `parseFloat` or `formatAmount` | One type check plus one regex match with capture groups; pad the fraction with `padEnd(2, '0')`. No numeric conversion at any point | feat.design (B4.2, B4.4, DD-5, DD-8); feat.trd (IF-7.5); feat.tasks (TSK-07 implementation notes); record:memory (D-2026-044, L-011) |
-| 1.7 | `riskClass(risk)` | New private helper | No | `risk-<risk>` for a known value, else `risk-unknown` | One expression with `RISK_CLASSES.includes(risk)` | feat.design (B4.2); feat.trd (IF-7.4) |
-| 1.8 | `renderOverdueRisk(rows)` | New function | Yes | `''` for `undefined`, `null` or `[]`; `TypeError` for any other non-array; otherwise `<table class="overdue-risk">` + plain header row (no class, no `<thead>`/`<tbody>`) + one `<tr class="risk-…">` per row in the given order with cells id, vendor, days, amount (`class="amount"`) + `</table>`; `TypeError` when `days` is not an integer | Same style as `renderAgingSummary`: template literals, `rows.map(...)`, `join('')`. The `days` check is an inline `Number.isInteger` test inside the row mapper, not another helper. No sorting, no risk text, no Risk column, no row actions | feat.design (B4.2 algorithm steps 1 to 4, B4.4); feat.trd (IF-7.1 to IF-7.8); feat.tasks (TSK-07); feat.stories (AC-07.1 to AC-07.9) |
-| 1.9 | `module.exports` | Update | — | Add `renderOverdueRisk` after the existing four names | Append one name to the existing line; the helpers and constants stay private, so the public surface grows by one function only | feat.design (B4.2); feat.stories (AC-07.10); file:ap_portal/CLAUDE.md ("Keep existing public signatures; add new functions for new behaviour.") |
-| — | `LABELS`, `formatAmount`, `renderAgingSummary` | Unchanged | Yes (already) | — | Not touched and not reused by the new code | feat.design (HC-9, B4.1); feat.tasks (TSK-07 "Must not change"); feat.trd (C-9) |
+| C-FE-1 | `src/ap_portal/index.js` (view helper) | `RISK_CLASSES` | New constant | `['high', 'medium', 'low', 'unknown']` | Allow-list for the row class (AC-07.3, AC-07.8) | feat.design (B4.2, B4.3); feat.trd (IF-7.4) |
+| C-FE-2 | same | `OVERDUE_HEADINGS` | New constant | `['Invoice', 'Vendor', 'Days overdue', 'Amount']` | Header row in order (AC-07.1, AC-07.2). Uses "Days overdue", never "Late" | feat.design (B4.2); feat.prd (NFR-10) |
+| C-FE-3 | same | `escapeHtml(value)` | New private helper | `String(value).replace(/[&<>"']/g, …)` with one lookup map | Escapes `id` and `vendor` (AC-07.7) | feat.design (B4.2, SE-2); feat.trd (IF-7.7) |
+| C-FE-4 | same | `toTwoDecimalString(value)` | New private helper | String-only. Checks `typeof value === 'string'` and the pattern `^-?\d+(\.\d{1,2})?$`, pads the fraction with zeros to two digits, and throws `TypeError` otherwise | Shows the amount without `Number()`, `parseFloat` or `formatAmount` (AC-07.5, AC-07.6) | feat.design (B4.2, B4.4, DD-5, DD-8); feat.tasks (TSK-07 notes) |
+| C-FE-5 | same | `riskClass(risk)` | New private helper | `RISK_CLASSES.includes(risk) ? 'risk-' + risk : 'risk-unknown'` | Feed data can never inject a class name (AC-07.3, AC-07.8) | feat.design (B4.2); feat.trd (IF-7.4) |
+| C-FE-6 | same | `renderOverdueRisk(rows)` | New exported function | Returns `''` for `undefined`, `null` or `[]`. Throws `TypeError` for any other non-array value. Otherwise returns `<table class="overdue-risk">`, a plain header row, then one `<tr class="risk-…">` per row in the given order (id, vendor, days, `<td class="amount">` amount), then `</table>`. Throws `TypeError` when `days` fails `Number.isInteger`. No re-sorting, no Risk column or risk text, no row actions | HC-8; AC-07.1 to AC-07.4, AC-07.9 | feat.design (B4.2 steps 1–4, B4.4); feat.tasks (TSK-07); feat.stories (AC-07.1 to AC-07.9) |
+| C-FE-7 | same | `module.exports` (line 15) | Updated | Add `renderOverdueRisk` and leave the existing four names unchanged. The helpers stay private | AC-07.10 | feat.design (B4.2); feat.stories (AC-07.10); mcp:codegraph |
+| C-FE-8 | same | `VERSION` (line 3) | Updated | Next minor version. The lane confirms the number | DD-11; TK-07.5 | feat.design (DD-11); feat.tasks (section 2) |
+| C-FE-9 | `package.json` | `"version"` | Updated | Same value as `VERSION`. Nothing else in the file changes | Keeps `VERSION` and `"version"` in step | feat.tasks (TSK-07 "Done when"); file:ap_portal/package.json |
+| C-FE-10 | `tests/portal.test.js` (test layer) | New `node:test` cases | Added after the existing tests | The B4.5 tests plus the CL-FE6 coverage cases (see section 4) | TK-07.3; CI coverage of at least 90% | feat.design (B4.5); feat.tasks (TSK-07 "Tests to add") |
 
-**Why no new source file (agent judgement).** feat.design B4.1 and feat.tasks TSK-07 put all of this in `src/ap_portal/index.js`; a new module would be outside the task's file budget. CI also compiles every `.js` file in `src/ap_portal` and measures coverage over `src/**` (file:ap_portal/ci.mjs), so a second file would add an export line, a `require` and its own coverage to keep up, with no gain.
+### How this keeps the change small (agent judgement)
 
-**Why the helpers stay private (agent judgement).** Exporting them would add public signatures that later changes must keep (file:ap_portal/CLAUDE.md), and feat.design B4.2 exports only `renderOverdueRisk`. The helpers are covered through `renderOverdueRisk` in the tests.
+1. **No new file.** All of the code goes into `src/ap_portal/index.js`. A new module would add a second `require` path, and `ci.mjs` would also have to compile it, so nothing is gained (feat.design DD-2; task.repo_access section 3; file:ap_portal/ci.mjs).
+2. **Append, don't rewrite.** Put the two constants and the four functions between `renderAgingSummary` (ends at line 13) and `module.exports` (line 15). Lines 4–13 stay byte-for-byte the same (mcp:codegraph; feat.tasks TSK-07 "Must not change").
+3. **Two existing lines change**: `VERSION` (line 3) and `module.exports` (line 15). The header comment on line 2 may be widened to mention the overdue risk table. That is optional; it is a comment only (mcp:codegraph).
+4. **Build the header from `OVERDUE_HEADINGS`** with `map` and `join('')`. Follow the `renderAgingSummary` template-string style; no DOM or templating library (feat.design B4.2 step 4; DD-1).
+5. **Keep the helpers small and private.** `riskClass` and `escapeHtml` are single expressions. The design names them as helpers, so they stay as functions rather than being inlined. This keeps the code traceable to B4.2 (feat.design B4.2).
+6. **Don't reuse `formatAmount`**, even though it already gives two decimals. Reusing it would break D-2026-044 and fail T-14 (feat.trd F-12, R-2; record:memory).
 
-**Kept as named helpers although they could be inlined (agent judgement).** `riskClass` and `escapeHtml` could be inlined to save a few lines, but feat.design B4.1 and feat.tasks TSK-07 name them as components. This file follows the approved design rather than trimming it.
+### Unchanged (must not change)
 
-### 3.2 `tests/portal.test.js` (unit tests)
-
-Append tests; do not edit the two existing tests. Every error branch needs its own test, because coverage is measured over `src/**` and must stay at 90 or above (file:ap_portal/ci.mjs; feat.tasks section 2, CI bar).
-
-| Test (names from feat.design B4.5; `null` and the extra `TypeError` cases from feat.tasks TSK-07) | Covers in `index.js` | Acceptance criteria |
+| Item | Reason | Source |
 |---|---|---|
-| `renders overdue risk table` | 1.4, 1.8 main path | AC-07.1, AC-07.2 |
-| `maps every risk value to its class` | 1.3, 1.7 | AC-07.3 |
-| `returns empty string for no rows` (`[]`, `undefined`, `null`) | 1.8 empty branch | AC-07.4 |
-| `shows amount strings unchanged` (`"1250.00"`, `"15.00"`, a string with more digits than a JS `Number` holds) | 1.6 | AC-07.5 |
-| `pads short amounts as strings` (`"980.5"` → `980.50`) | 1.6 padding | AC-07.6 |
-| `rejects non-string amounts`; amount with an exponent, a thousands separator or three decimals → `TypeError` | 1.6 error branches | DD-8 (feat.design) |
-| `escapes id and vendor` | 1.5 | AC-07.7 |
-| `unexpected risk renders risk-unknown` | 1.7 fallback | AC-07.8 |
-| Non-array `rows` → `TypeError`; non-integer `days` → `TypeError` | 1.8 error branches | DD-8 (feat.design) |
-| No Risk column, no risk text, no row action in the output | 1.8 | AC-07.9 |
-| Existing tests unchanged; `renderOverdueRisk` exported next to the existing exports | 1.9 | AC-07.10 |
+| `LABELS`, `formatAmount`, `renderAgingSummary` and their two tests | Signature rule; AC-07.10; T-16 | feat.tasks (TSK-07); feat.design (HC-9); file:ap_portal/CLAUDE.md |
+| `ci.mjs` | The CI script is not in TSK-07's file budget | feat.tasks (TSK-07 "Files in budget") |
+| `README.md`, `CLAUDE.md` | Not in the file budget | feat.tasks (TSK-07 "Files in budget") |
+| Other repositories (ap_aging and the rest) | TSK-07 depends only on the CT-1 field list | feat.tasks (TSK-07 "Depends on"); task.repo_access (section 4) |
 
-Sources: feat.design (B4.5); feat.tasks (TSK-07 "Tests to add"); feat.stories (STORY-07 acceptance criteria).
+## 3. Interface consumed: CT-1
 
-Minimum-lines approach for the tests (agent judgement): one shared WF-1-style fixture array of CT-1 rows reused across tests, and `assert.throws(..., TypeError)` for the error branches, so each branch is one assertion line. Test data stays synthetic (`SYN-INV-*`, "Synthetic Vendor <letter>") (feat.design SE-4).
+`rows` is the result of `JSON.parse` on the ap_aging payload. It is an array of `{id: string, vendor: string, days: integer, amount: string, risk: string}`, already in the right order. `amount` is a two-decimal string with no exponent and no thousands separator. `risk` is one of `high`, `medium`, `low` or `unknown` (feat.design A3 CT-1, B4.3). This repository adds no transport (feat.design DD-3).
 
-### 3.3 `package.json` (package metadata)
+## 4. Branches the tests must cover (for the 90% line-coverage bar)
 
-| Field | Change | Source |
+| Branch in `renderOverdueRisk` / helpers | Test | Source |
 |---|---|---|
-| `"version"` | Same minor step as `VERSION` in `index.js`; nothing else in the file changes | feat.tasks (section 2, TSK-07 "Done when"); file:ap_portal/package.json |
+| `undefined`, `null`, `[]` → `''` | `returns empty string for no rows`, plus `null` | feat.design (B4.5); feat.tasks (CL-FE6 list) |
+| Non-array `rows` → `TypeError` | CL-FE6 case | feat.tasks (TSK-07) |
+| Each of the four risk classes; an unexpected risk → `risk-unknown` | `maps every risk value to its class`, `unexpected risk renders risk-unknown` | feat.design (B4.5) |
+| Amount unchanged; padded from `"980.5"`; non-string → `TypeError`; exponent, thousands separator or three decimals → `TypeError` | `shows amount strings unchanged`, `pads short amounts as strings`, `rejects non-string amounts`, CL-FE6 cases | feat.design (B4.5); feat.tasks (TSK-07) |
+| Non-integer `days` → `TypeError` | CL-FE6 case | feat.tasks (TSK-07) |
+| Escaping of `<`, `&`, `"` in `id` and `vendor` | `escapes id and vendor` | feat.design (B4.5) |
+| Full table shape and row order | `renders overdue risk table` | feat.design (B4.5); feat.stories (AC-07.1) |
 
-## 4. Components and layers not changed
+## 5. Traceability
 
-| Component / layer | Why not | Source |
+| Component | Story AC | TRD tests |
 |---|---|---|
-| `LABELS`, `formatAmount`, `renderAgingSummary` and their tests | Must not change; the `formatAmount` float issue stays open as TQ-2 | feat.tasks (TSK-07); feat.trd (C-9, F-12, TQ-2) |
-| `ci.mjs` | CI already compiles, tests with coverage and runs the static checks the task needs | file:ap_portal/ci.mjs |
-| `README.md`, `CLAUDE.md` | Not in the task's file budget; the README holds only the package description and the CI command | feat.tasks (TSK-07 files in budget); file:ap_portal/README.md; file:ap_portal/CLAUDE.md |
-| Transport or API client between ap_aging and ap_portal | Not added; the consumer parses CT-1 and passes the array. A transport would re-trigger DES-01 | feat.design (A3, DD-3, A8) |
-| Host page, navigation, filters, row actions | Out of this design | feat.design (A1 UI boundary); feat.trd (IF-7.8) |
-| Stylesheet for the `risk-*` classes | No stylesheet exists in the repository and none is in the task's file budget; the function only sets the class | tool:repo; feat.tasks (TSK-07 files in budget) |
-| Other repositories (ap_aging, ap_pipeline, ap_forecast) and the end-to-end harness | Other lanes (TSK-01 to TSK-06) and the Testing Agent (TSK-08) | feat.tasks (section 1) |
-| Dependencies | None added: Node.js 22 CommonJS only | feat.design (DD-1) |
+| C-FE-1, C-FE-5 | AC-07.3, AC-07.8 | T-12, T-15 |
+| C-FE-2, C-FE-6 | AC-07.1, AC-07.2, AC-07.4, AC-07.9 | T-12, T-13 |
+| C-FE-3 | AC-07.7 | T-15 |
+| C-FE-4 | AC-07.5, AC-07.6 | T-14 |
+| C-FE-7, unchanged items | AC-07.10 | T-16 |
+| C-FE-8, C-FE-9 | TK-07.5 | — |
 
-## 5. Contract the component consumes (CT-1)
+Sources: feat.stories (STORY-07); feat.trd (T-12 to T-16); feat.design (B4.5).
 
-`renderOverdueRisk` is built against the CT-1 field list only, not the ap_aging code, so it can be built in parallel with TSK-06.
+## 6. Assumptions (agent judgement)
 
-| Field | Type | How the component uses it | Source |
-|---|---|---|---|
-| `id` | string | Escaped, first cell | feat.design (A3 CT-1, B4.2) |
-| `vendor` | string | Escaped, second cell | feat.design (A3 CT-1, B4.2) |
-| `days` | integer | Integer text, third cell; `TypeError` if not an integer | feat.design (A3 CT-1, B4.4) |
-| `amount` | two-decimal string | String-only display, `class="amount"` cell | feat.design (A3 CT-1, B4.2); feat.trd (IF-7.5) |
-| `risk` | `high`, `medium`, `low` or `unknown` | Row class only, through the allow-list | feat.design (A3 CT-1, B4.2); feat.trd (IF-7.4) |
-
-The input is the array from `JSON.parse` of the ap_aging payload; an empty payload is `[]` (feat.design A3, B4.3).
-
-## 6. Rules the change must keep
-
-| Rule | Source |
+| ID | Assumption |
 |---|---|
-| Keep existing public signatures; add new functions for new behaviour | file:ap_portal/CLAUDE.md; feat.design (header, architecture rule) |
-| Monetary amounts are never converted to a float: no `Number()`, `parseFloat` or `formatAmount` on the amount | record:memory (D-2026-044, L-011); feat.trd (IF-7.5) |
-| No source line matching `console.log` or `eval(` (comments included); no line longer than 140 characters | file:ap_portal/ci.mjs; feat.tasks (section 2, CI bar) |
-| Coverage of at least 90% with every error branch tested | file:ap_portal/ci.mjs; file:ap_portal/CLAUDE.md; feat.tasks (section 2, CI bar) |
-| Terminology: "Days overdue", never "Late" | feat.prd (NFR-10); feat.design (NF-12) |
-| Commit messages start with the story ID (`STORY-07`); the task ID may follow | feat.tasks (section 2); record:memory (conventions) |
+| CA-1 | The helpers are not exported, as the `module.exports` list in feat.design B4.2 shows. Tests reach them through `renderOverdueRisk` |
+| CA-2 | The new code goes between `renderAgingSummary` and `module.exports`, so the diff touches no existing logic |
+| CA-3 | Styling for the `risk-*` and `overdue-risk` classes is outside this repository, which has no stylesheet. HTML class names are the only styling hook ap_portal provides |
 
-## 7. Pending items that touch these components (carried, non-blocking)
-
-Each is built on its interim design; if an answer differs, only the named item changes.
-
-| ID | Affects | Interim design used | Source |
-|---|---|---|---|
-| TQ-7 | 1.4, 1.8 header row | Plain `<tr><th>…</th></tr>`, no `<thead>`/`<tbody>` | feat.trd (IF-7.2, TQ-7); feat.stories (AC-07.2) |
-| TQ-11, OQ-B10 | 1.6 | Pad short amounts as strings | feat.trd (IF-7.5, TQ-11); feat.stories (AC-07.6) |
-| OQ-B8 | 1.5 | Escape `id` and `vendor` | feat.trd (IF-7.7); feat.stories (AC-07.7) |
-| TQ-6 | 1.3, 1.7 | Unknown `risk` renders `risk-unknown` | feat.trd (IF-7.4, TQ-6); feat.stories (AC-07.8) |
-| OQ-B9, PQ-P7 | 1.8 | No Risk column, no risk text, no row actions | feat.trd (IF-7.8); feat.stories (AC-07.9) |
-| DQ-3 | 1.6, 1.8 | Throw `TypeError` on a CT-1 violation | feat.design (DD-8, D3) |
-| TQ-2 | `formatAmount` (not changed) | Kept as is; not used by the new code | feat.trd (F-12, TQ-2) |
-
-## 8. Open questions (all non-blocking)
+## 7. Open questions (all non-blocking)
 
 | ID | Question | Interim answer | Owner (proposed) |
 |---|---|---|---|
-| CQ-FE-1 | The `risk-*` row classes need styles to be visible to the AP manager, but no stylesheet exists in `ap_portal` and none is in the task's file budget. Who owns the styles? | The function sets the class only; styling stays with the host page, outside this task | UX lead / Developer |
-| CQ-FE-2 | No approved Figma frames exist for SC-1 (Figma is not connected); the screens are text frames. | Follow feat.design B4.2 and, in FE-04, feat.screens | UX lead |
-| CQ-FE-3 | Exact next version number for `VERSION` and `"version"` | A minor step, confirmed by the lane in FE-04 | Developer |
-| RA-1 (carried) | The working branch is `feature/story`, not `feature/STORY-07`, while the convention is `feature/<story>` | Use `feature/story`; commit messages start with `STORY-07` | Developer |
+| CMQ-1 | Where are the `overdue-risk` and `risk-*` classes styled? ap_portal has no stylesheet, and the host page is not named (related to DQ-1) | Out of scope for TSK-07; the classes are emitted only | UX lead / Architect |
+| CMQ-2 | Which exact version number should the minor step use? | The lane confirms it at FE-04 | Developer |
 
-Sources: tool:repo; feat.tasks (TSK-07, section 2); feat.stories (STORY-07 frame links, PQ-P6); feat.design (DQ-5); task.repo_access (RA-1); file:ap_portal/CLAUDE.md (branch convention).
+Carried, unchanged: TQ-2 (`formatAmount` float), TQ-6, TQ-7, TQ-11 / OQ-B10 (padding), OQ-B8 (escaping), OQ-B9 and PQ-P7 (no Risk column or actions), DQ-3 (`TypeError` on contract violation), RAQ-1 (branch name `feature/story`). Each keeps the interim answer used above (feat.design D3; feat.stories; task.repo_access).
 
-## 9. Validation check
+## 8. Validation check
 
 | Check | Result | Source |
 |---|---|---|
-| Existing code read before listing changes | Pass: every file in the repository's working tree was read | tool:repo; file:ap_portal/ci.mjs; file:ap_portal/package.json; file:ap_portal/README.md; file:ap_portal/CLAUDE.md |
-| Changes stay inside the TSK-07 file budget | Pass: `src/ap_portal/index.js`, `package.json` (version only), `tests/portal.test.js` | feat.tasks (TSK-07) |
-| Every listed component traces to the design | Pass: items 1.2 to 1.9 map to feat.design B4.1 and B4.2; item 1.1 (header comment) is agent judgement | feat.design (B4) |
-| Every STORY-07 acceptance criterion has a component and a test | Pass: AC-07.1 to AC-07.10 in section 3.2 | feat.stories (STORY-07) |
-| No existing signature changed | Pass: only additions plus the `VERSION` value | file:ap_portal/CLAUDE.md; feat.design (B4.1) |
-| Decision log and lessons | Consistent: D-2026-044 and L-011 (no float on amounts) | record:memory |
-| Conflict with an approved output | None | feat.design; feat.tasks; feat.stories |
+| Existing code read and understood | Pass (section 1) | tool:repo; mcp:codegraph |
+| Every component traces to the design and a story AC | Pass (sections 2, 5) | feat.design; feat.stories |
+| Within the TSK-07 file budget (`index.js`, `package.json`, `tests/portal.test.js`) | Pass | feat.tasks (TSK-07) |
+| Existing signatures kept | Pass | file:ap_portal/CLAUDE.md; feat.design (header "Architecture rule", A5 NF-4, D2) |
+| D-2026-044 / L-011 (no float for money) | Consistent (C-FE-4; `formatAmount` not reused) | record:memory |
+| Conflict with an approved output | None | — |
 | Blocking questions | None | — |

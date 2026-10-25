@@ -1,57 +1,65 @@
-# FE-03 Identify the components/layers to be changed (Frontend agent)
+# FE-03 · Identify the components/layers to be changed
 
-**Item:** FEAT-ZD-48600 · **status:** done
-**Trigger:** Previous outcome  
-**Action:** Read the existing code and understand it.
-Identify the components/layers that needs to be created/updated with minimum lines of code  
-**Outcome expected:** The list of components/layers needs to be created/updated with minimum lines of code
+**Agent:** Frontend · **Item:** FEAT-ZD-48600 · **Status:** ✅ done
+**Approved by:** automated checks and the independent judge
 
-## Inputs (what the agent was given)
+**What this step does:** Read the existing code and understand it.
+Identify the components/layers that needs to be created/updated with minimum lines of code
 
-| Item | Prepared input (this repository) | Read from (producer in GitHub) | Commit | Produced by |
+**Expected outcome:** The list of components/layers needs to be created/updated with minimum lines of code
+
+**Started by:** Previous outcome
+
+## Input: what the agent received
+
+| # | Input | What it is | Produced by | Open |
 |---|---|---|---|---|
-| feat.tasks | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.tasks.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.tasks.md | b0fd4d2 | DES-04 |
-| feat.stories | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.stories.md | hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.stories.md | 0590ea4 | REQ-08 |
-| feat.prd | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.prd.md | final_document/e2e-run/runs/run-20261025-111239-feat-zd-48600/workspace/agents/hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.prd.md | 908b58d | REQ-05 |
-| feat.trd | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.trd.md | hobasa-requirement-agent/outputs/FEAT-ZD-48600/feat.trd.md | 3637e51 | REQ-07 |
-| feat.design | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/feat.design.md | hobasa-design-agent/outputs/FEAT-ZD-48600/feat.design.md | 722a98f | DES-02 |
-| task.repo_access | hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-03/task.repo_access.md | hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.repo_access.md | aac590a | FE-01 |
+| 1 | `feat.tasks` | Engineering tasks with goal, AC, dependencies and size budget | Design agent · DES-04 | [input copy](https://github.com/arghya05/hobasa-frontend-agent/blob/main/inputs/FEAT-ZD-48600/FE-03/feat.tasks.md) · [original](https://github.com/arghya05/hobasa-design-agent/blob/main/outputs/FEAT-ZD-48600/feat.tasks.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-design-agent/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.html) · [PDF](https://github.com/arghya05/hobasa-design-agent/blob/main/docs/FEAT-ZD-48600/DES-04_feat-tasks.pdf) |
+| 2 | `feat.stories` | Epics, stories and tasks with numbered AC, frame links, assumptions and open items (latest revision) | Requirement agent · REQ-08 | [input copy](https://github.com/arghya05/hobasa-frontend-agent/blob/main/inputs/FEAT-ZD-48600/FE-03/feat.stories.md) · [original](https://github.com/arghya05/hobasa-requirement-agent/blob/main/outputs/FEAT-ZD-48600/feat.stories.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-requirement-agent/main/docs/FEAT-ZD-48600/REQ-08_feat-stories.html) · [PDF](https://github.com/arghya05/hobasa-requirement-agent/blob/main/docs/FEAT-ZD-48600/REQ-08_feat-stories.pdf) |
+| 3 | `feat.prd` | Approved PRD | Requirement agent · REQ-05 | [input copy](https://github.com/arghya05/hobasa-frontend-agent/blob/main/inputs/FEAT-ZD-48600/FE-03/feat.prd.md) · [original](https://github.com/arghya05/hobasa-requirement-agent/blob/main/outputs/FEAT-ZD-48600/feat.prd.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-requirement-agent/main/docs/FEAT-ZD-48600/REQ-05_feat-prd.html) · [PDF](https://github.com/arghya05/hobasa-requirement-agent/blob/main/docs/FEAT-ZD-48600/REQ-05_feat-prd.pdf) |
+| 4 | `feat.trd` | Approved TRD | Requirement agent · REQ-07 | [input copy](https://github.com/arghya05/hobasa-frontend-agent/blob/main/inputs/FEAT-ZD-48600/FE-03/feat.trd.md) · [original](https://github.com/arghya05/hobasa-requirement-agent/blob/main/outputs/FEAT-ZD-48600/feat.trd.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-requirement-agent/main/docs/FEAT-ZD-48600/REQ-07_feat-trd.html) · [PDF](https://github.com/arghya05/hobasa-requirement-agent/blob/main/docs/FEAT-ZD-48600/REQ-07_feat-trd.pdf) |
+| 5 | `feat.design` | HLD, LLD and contracts | Design agent · DES-02 | [input copy](https://github.com/arghya05/hobasa-frontend-agent/blob/main/inputs/FEAT-ZD-48600/FE-03/feat.design.md) · [original](https://github.com/arghya05/hobasa-design-agent/blob/main/outputs/FEAT-ZD-48600/feat.design.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-design-agent/main/docs/FEAT-ZD-48600/DES-02_feat-design.html) · [PDF](https://github.com/arghya05/hobasa-design-agent/blob/main/docs/FEAT-ZD-48600/DES-02_feat-design.pdf) |
+| 6 | `task.repo_access` | Repository (and Databricks) availability and write access | Frontend agent · FE-01 | [input copy](https://github.com/arghya05/hobasa-frontend-agent/blob/main/inputs/FEAT-ZD-48600/FE-03/task.repo_access.md) · [original](https://github.com/arghya05/hobasa-frontend-agent/blob/main/outputs/FEAT-ZD-48600/task.repo_access.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-frontend-agent/main/docs/FEAT-ZD-48600/FE-01_task-repo_access.html) · [PDF](https://github.com/arghya05/hobasa-frontend-agent/blob/main/docs/FEAT-ZD-48600/FE-01_task-repo_access.pdf) |
 
-Full brief per attempt: `brief_attempt<N>.md` (trigger event, owner answers, tool view, refusal reasons).
+The full brief the agent was given, attempt by attempt: `brief_attempt<N>.md` in this folder.
 
-## Outputs (what the agent produced)
+## Output: what the agent produced
 
-| Item | GitHub file |
-|---|---|
-| task.components | hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.components.md |
+| # | Output | What it is | Open |
+|---|---|---|---|
+| 1 | `task.components` | Components, layers, sources or pipelines to change | [Markdown](https://github.com/arghya05/hobasa-frontend-agent/blob/main/outputs/FEAT-ZD-48600/task.components.md) · [HTML](https://htmlpreview.github.io/?https://raw.githubusercontent.com/arghya05/hobasa-frontend-agent/main/docs/FEAT-ZD-48600/FE-03_task-components.html) · [PDF](https://github.com/arghya05/hobasa-frontend-agent/blob/main/docs/FEAT-ZD-48600/FE-03_task-components.pdf) |
 
-## Code
-
-Repository `ap-portal-sample`, branch `feature/story`, commit `ff761ee`
+**Code:** repository [ap-portal-sample](https://github.com/arghya05/ap-portal-sample) · branch [feature/story](https://github.com/arghya05/ap-portal-sample/tree/feature/story) · commit [ff761ee](https://github.com/arghya05/ap-portal-sample/commit/ff761ee)
 
 ```
 no file changes in this step
 ```
 
+## Checks and approval
+
+| Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
+|---|---|---|---|---|
+| 1 | new | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 5} |
+
+Improvements the independent judge suggests (non-blocking):
+
+- The workbook asks for the change 'with minimum lines of code', but the output gives no size for the change. A rough line estimate per component (C-FE-1 to C-FE-10) would make the claim checkable at FE-04.
+- In 'How this keeps the change small' item 1, 'ci.mjs would also have to compile it' makes this sound like extra work. ci.mjs already runs `node --check` on every .js file in src/ap_portal automatically, so a new file needs no CI change. The real reason to keep one file is feat.design DD-2, which puts renderOverdueRisk in index.js. Say that instead.
+- AC-07.9 (no Risk column or risk text, no row actions) and NFR-10 (no 'Late' wording) have no test in the section 4 coverage table. Consider an assertion in `renders overdue risk table` that the output contains no 'Risk' or 'Late' heading.
+- The B4.5 escaping test covers only `<`, `&` and `"`, but AC-07.7 also requires `>` and `'`. Consider adding them so every entry in the escape map is checked.
+- In the section 5 traceability table, the C-FE-2/C-FE-6 row links AC-07.9 to T-12 and T-13. No TRD test covers AC-07.9 (feat.stories maps NFR-6 / AC-07.9 to '—'). Split that row so the gap is visible.
+
 ## How the agent worked
 
-- Approach: I followed the FE-03 procedure in the frontend-steps skill. I read all six contracted inputs, focusing on TSK-07, STORY-07, feat.design HC-8/HC-9 and B4, and feat.trd IF-7, F-12, F-13 and C-8/C-9. I re-read task.repo_access at its current commit. I then read every file in the ap_portal working tree with the Read tool: CLAUDE.md, package.json, ci.mjs and README.md, plus index.js and portal.test.js from the tool view. Shell commands are blocked in this step, so I used Read and Glob. I mapped each change to one design item and kept everything inside the TSK-07 file budget. To keep the line count low, the new code follows renderAgingSummary's pattern (template literals plus map/join), the helpers stay private, there is no new file and the days check sits inline. I kept the helpers the design names rather than inlining them. A verifier subagent checked the draft against its sources, and the one item it flagged, the optional header-comment edit, is marked as agent judgement.
-- Tools used: Skill (frontend-steps), Read, Grep, Glob, Agent (verifier), Write, Edit
-- Helper subagents: Agent
-- Connector calls: none
+- **Approach:** I used the frontend-steps FE-03 procedure. First I read feat.tasks (TSK-07), feat.design (B4 LLD, CT-1, DD-5, DD-8) and task.repo_access in full. From feat.stories, feat.prd and feat.trd I searched only the STORY-07, AC-19 to AC-21 and IF-7 / T-12 to T-16 parts. Then I read the existing ap_portal code: the index.js and test views, ci.mjs, package.json and README. I asked codegraph which code depends on the existing exports. From that I listed the smallest set of changes: two constants, three private helpers and one exported function, all appended in index.js. Two existing lines change (VERSION and module.exports), plus the package.json version and new tests. There are no new files and no edits to existing logic. A verifier subagent checked the draft against its sources. I fixed one citation and one overreach it found, and marked the codegraph test-coverage remark as agent judgement. A shell check was blocked by the step's G9 guardrail, so I read the files with Read and Glob instead.
+- **Tools used:** Skill(frontend-steps), Read, Grep, Glob, mcp:codegraph (codegraph_explore), Agent(verifier), Write, Edit
+- **Helper subagents:** Agent
+- **Connector calls:** none
 
-## Attempts (checks before any person saw the output)
+## Files in this folder (audit trail)
 
-| Attempt | Session | Checks failed | Judge unsupported | Judge scores |
-|---|---|---|---|---|
-| 1 | new | 1 | — | — |
-| 2 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 5} |
-
-## Improvements the independent judge suggests (non-blocking, for the people at the gate)
-
-- The workbook outcome asks for the change 'with minimum lines of code', but the output gives no rough line estimate per item or in total (for example roughly how many lines for index.js and how many for the tests). A rough estimate, marked as agent judgement, would make the 'minimum lines' claim measurable for FE-04 and the reviewers.
-- Item 1.1 (editing the header comment) is optional, agent judgement, and appears in neither feat.design B4.1 nor feat.tasks TSK-07. The output would be tighter if it either dropped the item or stated plainly that FE-04 may skip it without leaving the design.
-- Section 2 lists the CI pass conditions as coverage >= 90, no failed test and at least one test run. ci.mjs also requires every file to compile (`node --check`), the test process to exit with status 0 and no static issues. Listing all of them in the 'CI' row would make it complete; section 6 already covers the static checks.
-- CQ-FE-1 (who owns the risk-* styles) could cite feat.design A1, which puts the host page out of scope. That would show the interim answer rests on the approved design and is not only agent judgement.
-
-Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
+- `brief_attempt<N>.md`: the exact brief the agent received
+- `result_attempt<N>.json`: the agent's structured answer (approach, tools, claims with their sources, open questions)
+- `checks_attempt<N>.json`: what the automated guardrail checks found
+- `judge_attempt<N>.json`, `judge_brief_attempt<N>.md`: the independent judge
+- `outputs/`: the outputs as approved
