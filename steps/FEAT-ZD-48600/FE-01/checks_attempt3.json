@@ -1,0 +1,5 @@
+{
+  "failures": [
+    "G1 judge found an unsupported statement: \"The spine created the branch, and FE-01 allows no shell commands.\" (No source says this. The tool view (tool:repo-access) says only that branch feature/story was \"created from dev at ff761ee\". It does not say who created it. Nei)"
+  ]
+}
