@@ -34,20 +34,19 @@ no file changes in this step
 
 | Attempt | Session | Problems found by the checks | Unsupported statements (judge) | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 3 | — | — |
-| 2 | continued | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 5, 'useful': 5} |
+| 1 | new | 0 | 0 | {'correct': 5, 'complete': 5, 'grounded': 4, 'useful': 5} |
 
 Improvements the independent judge suggests (non-blocking):
 
-- Section 2 'Current exports' says `VERSION, LABELS, formatAmount, renderAgingSummary (kept unchanged)`, citing feat.tasks TSK-07 'Must not change'. That list names only LABELS, formatAmount and renderAgingSummary. TSK-07 is meant to step VERSION (feat.tasks section 2 and TSK-07 'Files in budget'), so the export stays but its value changes. Word it that way so FE-03/FE-04 aren't misled.
-- Write access comes only from tool:repo-access and the spine's tool result ('write access confirmed'). The output could say outright that push rights to the remote (github.com/arghya05/ap-portal-sample per .git/logs/refs/heads/main) were not tested by a push in this step and are checked at FE-06.
-- Section 5 says 'FE-01 does not allow shell commands' and cites no source. The G9 hook enforces this, but none of the listed inputs states it. Cite record:brief / the G9 guardrail or drop the sentence.
-- RAQ-1 (`feature/story` vs `feature/<story>`) is a useful catch. It could also note that .git/logs/refs/heads/feature/story shows the branch was 'Created from HEAD' at ff761ee, while the tool view says 'from dev'. Both point to the same commit, so this is consistent, but the record would be more precise.
+- Section 3, 'This agent may branch, commit and open a PR. It does not merge, deploy or push to protected `main` (agent guardrails, record:brief)': the fact is true, but the step brief does not hold it. It comes from the Frontend agent definition (hobasa-claude-code-plugin/agents/frontend.md, 'Actions: Branch, commit, PR and defect status only; no merge, deploy, protected-main push'). Fix the citation so it points to the real source.
+- Line 5, 'Shell commands are not allowed in this step', has no citation. The step's G9 hook enforces it ('step FE-01 may run only no shell commands'). Cite the hook or the tool policy, or drop the sentence.
+- RA-2 says 'The tool view confirms local write access only.' Neither the tool view ('the agent identity has write access (git status clean)') nor the spine tool result ('write access confirmed') narrows this to local access. Reword RA-2 so it reads as caution, not as something the tool view says. Also square it with 'Outcome: Met', or make clear that remote push access is the open item.
+- RA-1 (`feature/story` versus the `feature/<story>` convention) is a real gap and is correctly raised. Name the spine operator as an owner too, since the spine created the branch.
 
 ## How the agent worked
 
-- **Approach:** FE-01 checks only whether the repository is available and writable, so I did the checks directly instead of using a helper. I read feat.tasks and org.engineering_stack to find the Frontend lane's task and repository: TSK-07 in ap_portal. FE-01 does not allow shell commands, so availability, branch, clean tree and write access come from the step's tool view. I backed those up by reading these repository files with Read: .git/HEAD, the branch logs for feature/story, dev and main, package.json, ci.mjs, CLAUDE.md, src/ap_portal/index.js and tests/portal.test.js. Every file:ap_portal citation in the output is one of these. I wrote the whole output file again. It has no attempt numbers and no spine-only sections, and it leaves out the personal data in the git logs. I needed no connectors.
-- **Tools used:** Skill(frontend-steps), Read, Glob, Grep, Write
+- **Approach:** I followed the FE-01 procedure in the frontend-steps skill. I read the two inputs, feat.tasks and org.engineering_stack, to find which repository the Frontend lane needs: ap_portal, for TSK-07. This step's hook blocks every shell command, so I did not run git. Instead I checked the claims in the tool view by reading the checkout's files directly: .git/HEAD, the refs and reflogs, .git/config, package.json, ci.mjs, src/ap_portal/index.js and tests/portal.test.js. I then wrote task.repo_access with the result, a repository profile for FE-03 and FE-04, the branch and commit rules, and two non-blocking open questions. I did not use any connectors (osv, npm or codegraph) because the inputs and the checkout already held every fact I needed.
+- **Tools used:** Skill:frontend-steps, Read, Glob, Write, Edit, Bash (attempted; blocked by G9 hook for this step)
 - **Helper subagents:** none
 - **Connector calls:** none
 

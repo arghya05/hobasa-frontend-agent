@@ -1,0 +1,16 @@
+{
+  "unsupported": [],
+  "improvements": [
+    "Section 3, 'This agent may branch, commit and open a PR. It does not merge, deploy or push to protected `main` (agent guardrails, record:brief)': the fact is true, but the step brief does not hold it. It comes from the Frontend agent definition (hobasa-claude-code-plugin/agents/frontend.md, 'Actions: Branch, commit, PR and defect status only; no merge, deploy, protected-main push'). Fix the citation so it points to the real source.",
+    "Line 5, 'Shell commands are not allowed in this step', has no citation. The step's G9 hook enforces it ('step FE-01 may run only no shell commands'). Cite the hook or the tool policy, or drop the sentence.",
+    "RA-2 says 'The tool view confirms local write access only.' Neither the tool view ('the agent identity has write access (git status clean)') nor the spine tool result ('write access confirmed') narrows this to local access. Reword RA-2 so it reads as caution, not as something the tool view says. Also square it with 'Outcome: Met', or make clear that remote push access is the open item.",
+    "RA-1 (`feature/story` versus the `feature/<story>` convention) is a real gap and is correctly raised. Name the spine operator as an owner too, since the spine created the branch."
+  ],
+  "scores": {
+    "correct": 5,
+    "complete": 5,
+    "grounded": 4,
+    "useful": 5
+  },
+  "notes": "I checked each statement against the sources. Branch `feature/story` at ff761ee, created from dev: tool view, .git/HEAD and logs/HEAD (checkout from dev to feature/story), logs/refs/heads/feature/story. main and dev both point to ff761ee: refs files. Remote origin is ap-portal-sample on GitHub, main and dev track it, and feature/story has no upstream: .git/config. No Databricks or database: tool view and org.engineering_stack. Node.js 22, CommonJS, node:test and `node ci.mjs`: org.engineering_stack, ap_portal/CLAUDE.md and package.json. CI checks (node --check, NODE_PATH=src, coverage >= 90, the console.log/eval( check, lines over 140 characters): ci.mjs. The index.js exports, the two existing tests and version 2.3.0 in both files: the source files and feat.tasks. TSK-07, its files in budget and the STORY-07 commit prefix: feat.tasks. The FE-06 push: frontend-steps SKILL and grounded-output. I found no invented facts, wrong numbers or contradictions. The only weak spots are the misattributed guardrail citation and the uncited no-shell statement, both under improvements. The output meets the workbook outcome (repo available with write access) and raises sensible open questions."
+}
