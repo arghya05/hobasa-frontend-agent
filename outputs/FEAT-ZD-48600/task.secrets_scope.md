@@ -1,61 +1,53 @@
-# task.secrets_scope: FEAT-ZD-48600 (Frontend, ap_portal)
+# task.secrets_scope: FEAT-ZD-48600
 
-Secrets scope for the Frontend task TSK-07 "Render the overdue risk table" (STORY-07). This is FE-02 Access to secrets (attempt 1). The step checks which secrets the task needs, which ones the permission table grants, and whether access must be requested.
+Secrets scope for the Frontend task of FEAT-ZD-48600, from step FE-02 Access to secrets. It lists secret names only and records no values.
 
 | Field | Value | Source |
 |---|---|---|
 | Trace ID | FEAT-ZD-48600 | record:brief |
-| Step | FE-02 Access to secrets (attempt 1) | record:brief |
-| Owner / gate | Developer / no gate: automated checks, the independent judge and sampled human evaluation | record:brief |
-| Inputs | feat.tasks (revision b0fd4d2, from DES-04); org.permission_table (restricted, passed by reference only) | record:brief; feat.tasks |
-| Task in scope | TSK-07 / STORY-07, Frontend lane, repository ap_portal | feat.tasks (sections 1, 3 TSK-07) |
+| Step | FE-02 Access to secrets | record:brief |
+| Frontend task | TSK-07 Render the overdue risk table (STORY-07), ap_portal | feat.tasks (section 1, TSK-07) |
+| Repository | ap_portal | feat.tasks (TSK-07); tool:repo-access |
+| Permission table | org.permission_table is restricted and passed by reference only, so this step did not read it | record:brief |
 
-## 1. Result
+## 1. Secrets the task needs
 
-**No secrets are required, and none are granted, for TSK-07 in ap_portal. No access request is needed.**
+**None.** TSK-07 adds a pure render function, `renderOverdueRisk(rows)`, together with constants and private helpers, in `src/ap_portal/index.js`. It also steps the version in `package.json` and adds tests in `tests/portal.test.js` (feat.tasks TSK-07). The feature has no transport layer (feat.tasks TSK-06, "No transport layer"), so the task makes no network call and uses no data store or external service.
 
-| Secret name | Environment | Needed by TSK-07 | Granted (permission table) | Action |
-|---|---|---|---|---|
-| None | None | No | No: "no secrets are required or granted for this repository" | None. No access request raised |
+Code check of the ap_portal checkout:
 
-Sources: tool:repo-access (permission table summary for ap_portal); feat.tasks (TSK-07).
-
-## 2. Why the task needs no secret
-
-TSK-07 is a pure rendering change inside the ap_portal package. Nothing in its scope reads a credential, calls a service or opens a connection.
-
-| Check | Finding | Source |
+| Check | Result | Source |
 |---|---|---|
-| What the task builds | Exported `renderOverdueRisk(rows)` that returns an HTML `<table class="overdue-risk">` string, or `''` for missing, `null` or `[]` | feat.tasks (TSK-07 Goal) |
-| Files in budget | `src/ap_portal/index.js`, `package.json` (version only), `tests/portal.test.js` | feat.tasks (TSK-07 Files in budget) |
-| Technology | No new technology; only the Node.js 22 CommonJS runtime for this lane | feat.tasks (preamble, DD-1 carried) |
-| Data source | Takes the CT-1 rows as an argument; it depends on the CT-1 field list only, not on TSK-06 code | feat.tasks (TSK-07 Depends on) |
-| Transport / network | None. CT-1 has no transport layer; adding one would re-trigger DES-01 | feat.tasks (TSK-06 Must not change) |
-| External services or LLM | None in the Frontend lane. The only LLM-related task is TSK-04 in ap_forecast, which is not part of this lane | feat.tasks (sections 1, 3 TSK-04) |
-| Tests and CI | `node:test` with `NODE_PATH=src`; CI bar is compile, unit tests, coverage of at least 90% and static checks | feat.tasks (TSK-07 Tests to add; section 2 CI bar) |
-| End-to-end proof | TSK-08 uses a synthetic feed only (`SYN-INV-*`) and is the Testing Agent's test asset, not deployed | feat.tasks (TSK-08) |
+| `src/ap_portal/index.js` | Pure view helpers (`formatAmount`, `renderAgingSummary`) and constants. It has no `require`, no `process.env`, no network call and no URL | file:ap_portal/src/ap_portal/index.js |
+| `package.json` | No dependencies are declared. The only script is `ci` | file:ap_portal/package.json |
+| `ci.mjs` (CI) | Copies the process environment and sets only `NODE_PATH: 'src'`. It reads no secret | file:ap_portal/ci.mjs |
+| `tests/portal.test.js` | Requires only `node:test`, `node:assert` and `ap_portal`. It reads no secret and calls no service | file:ap_portal/tests/portal.test.js |
 
-## 3. Environments
+## 2. Secrets granted for the task's environments
 
-| Environment | Use by TSK-07 | Secrets |
+| Environment | Secret names granted | Source |
 |---|---|---|
-| Local / CI (feature branch `feature/<story>`) | Compile, unit tests, coverage and static checks | None |
-| dev (integration), main (released) | Not touched by this task, which works on its feature branch | None granted for ap_portal |
+| Local build and unit tests (`node ci.mjs`) | None | tool:repo-access |
+| CI pipeline | None | tool:repo-access |
+| dev (integration) / main (released) | None | tool:repo-access |
 
-Sources: feat.tasks (section 2 Branch and commit, CI bar); tool:repo-access.
+The tool registry for ap_portal states that the permission table requires and grants no secrets for this repository (tool:repo-access).
 
-## 4. Access requests
+## 3. Gap and access requests
 
-None raised. The permission table grants nothing for ap_portal and the task needs nothing, so the scope matches and there is no excess access to flag.
+| Required | Granted | Gap | Request raised |
+|---|---|---|---|
+| None | None | None | None needed |
 
-## 5. Guardrails carried to FE-04 Coding
+What the task needs matches what is granted. No access is excess, so nothing needs flagging, and no access is missing, so nothing needs requesting.
 
-- Do not add any secret, token, key or environment-variable read to `src/ap_portal/` for TSK-07. If one ever looks necessary, stop and return to FE-02. It would be outside the files in budget and outside the design (feat.tasks section 2: a task that needs a file outside its budget goes back to the Architect).
-- Test data stays synthetic (feat.tasks TSK-08).
+## 4. Re-entry rule
 
-## 6. Open questions
+If a later change adds a transport layer, an API call or a package dependency to ap_portal, the secrets scope must be checked again. A transport layer would also re-trigger DES-01 (feat.tasks TSK-06). In that case FE-02 runs again before FE-04 Coding.
 
-None blocking. None new.
+## 5. Open questions
+
+None.
 
 
 [Tool result] [ap_portal] Tool registry: no secrets required or granted (permission table)

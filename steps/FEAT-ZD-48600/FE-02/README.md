@@ -30,8 +30,8 @@ no file changes in this step
 
 ## How the agent worked
 
-- Approach: I followed the frontend-steps skill for FE-02 and got a receipt for my one readable contracted input, feat.tasks (revision b0fd4d2), through context_get. org.permission_table is restricted and passed by reference only, so I took the grant for ap_portal from the step's repo-access tool view, which summarises the permission table. From feat.tasks I worked out what the Frontend task TSK-07 needs: a pure HTML-rendering function in ap_portal, files in budget limited to index.js, package.json and the portal test file, no new technology, no transport layer and no LLM. So it needs no secret. I also looked through the ap_portal checkout for credential or environment-variable reads and found nothing beyond NODE_PATH in the CI script. I don't cite that check, so the claims rest only on receipted sources. The step blocked shell commands, so I used file tools only. Need and grant agree: none and none. So I raised no access request and wrote task.secrets_scope with names only.
-- Tools used: Skill:frontend-steps, mcp__hobasa-context__context_list, mcp__hobasa-context__context_get (feat.tasks), mcp__hobasa-context__memory_search, Read, Grep, Glob, Write, Edit
+- Approach: I read feat.tasks to find the Frontend task, TSK-07 (STORY-07, ap_portal), a pure render function with no transport layer. I left org.permission_table unread because it is restricted and passed by reference only, and relied on the tool:repo-access view: no secrets are required or granted for ap_portal. To confirm the code needs no secrets, I read every file the task touches or runs: src/ap_portal/index.js, tests/portal.test.js, package.json and ci.mjs. I also searched the checkout for environment and network use with Grep. Required and granted access are both none, so there is no gap and nothing to request. I then rewrote task.secrets_scope.md in full with names only and a re-entry rule.
+- Tools used: Skill (frontend-steps), Read, Glob, Grep, Write
 - Helper subagents: none
 - Connector calls: none
 
@@ -39,13 +39,14 @@ no file changes in this step
 
 | Attempt | Session | Checks failed | Judge unsupported | Judge scores |
 |---|---|---|---|---|
-| 1 | new | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
+| 1 | new | 2 | — | — |
+| 2 | resumed | 0 | 0 | {'correct': 5, 'complete': 4, 'grounded': 5, 'useful': 4} |
 
 ## Improvements the independent judge suggests (non-blocking, for the people at the gate)
 
-- Section 5 says adding a secret or env-var read to `src/ap_portal/` 'would be outside the files in budget'. But `src/ap_portal/index.js` is in TSK-07's files in budget (feat.tasks TSK-07). The cited rule in feat.tasks section 2 covers only files outside the budget. Base the guardrail on scope or design instead, for example the no-transport rule and the pure rendering goal.
-- Line 61 holds a stray line, '[Tool result] [ap_portal] Tool registry: no secrets required or granted (permission table)', after the open questions. It looks like a pasted tool echo. Remove it or put it in the Sources line.
-- The finding that TSK-07 needs no secret rests only on feat.tasks. The agent read the code, so it could cite `file:ap_portal/src/ap_portal/index.js` (no env or credential reads) and `file:ap_portal/ci.mjs` (its only `process.env` use passes NODE_PATH=src through to the tests). That would confirm the code needs no secret today.
-- The 'dev (integration), main (released)' row says the task does not touch them. That is an inference from the feature-branch rule. A gate reader would find it clearer marked as such, or tied to the later deployment steps.
+- Section 4 names "FE-04 Coding" with no citation. FE-04 appears in the journey and the run's input folders, but none of the cited sources (feat.tasks, record:brief, the ap_portal files, tool:repo-access) gives it the name "Coding". Cite the step source, or just say "before the coding step".
+- The file ends with a stray line, "[Tool result] [ap_portal] Tool registry: no secrets required or granted (permission table)", after the Open questions section. It looks like a pasted tool echo. Remove it, or turn it into a proper sentence with a citation inside section 2.
+- The ci.mjs row says CI "reads no secret". It is worth adding that `{ ...process.env }` passes the whole inherited environment to the test run, so any secret in the CI environment would reach the tests even though the code does not read one. That makes the 'None' grant for CI more meaningful.
+- The environment rows (local, CI, dev/main) all rest on one repository-level statement in tool:repo-access. You could say plainly that the registry gives one answer for the whole repository, not one per environment, so a reader does not take it as three separate checks.
 
 Details: `result_attempt<N>.json` (claims with sources), `checks_attempt<N>.json`, `judge_attempt<N>.json`.
