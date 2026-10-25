@@ -1,114 +1,113 @@
-# task.code: FEAT-ZD-48600 (Frontend lane)
+# task.code: FEAT-ZD-48600
 
-This file records the code changes on the working branch for STORY-07, "Render the overdue risk table". Step: FE-04 Coding. The spine commits and pushes the changes after the checks and the evaluation; this step commits nothing.
+This file records the code changes for TSK-07 / STORY-07, "Render the overdue risk table", in repository ap_portal, branch `feature/story`. Step: FE-04 Coding (record:brief). Nothing is committed or pushed; the spine commits after evaluation. Statements marked **agent judgement** are this agent's own choices; no input states them as fact.
 
-Statements marked **agent judgement** are this agent's own choices. No input states them as fact.
+## 1. Result at a glance
 
-| Field | Value | Source |
+| Item | State | Source |
 |---|---|---|
-| Trace ID / story | FEAT-ZD-48600 / STORY-07 (TSK-07) | record:brief; feat.stories (STORY-07); task.components (header) |
-| Repository / branch | `ap_portal`, `feature/story` (base `ff761ee`) | task.components (header); record:brief |
-| Write scope of this step | `src/ap_portal/`, `docs/`, `README.md` | record:brief |
-| Design followed | feat.design B4.1 to B4.4 (HC-8); feat.screens FS-1, FS-2, ST-1 to ST-8; org.design_library | feat.design; feat.screens; org.design_library |
-| Component list followed | task.components section 3.1, items 1.1 to 1.9 | task.components |
-| Repository files read | `src/ap_portal/index.js`, `CLAUDE.md`, `package.json`, `ci.mjs`, `README.md`, `docs/ap_portal.md` | file:ap_portal/src/ap_portal/index.js; file:ap_portal/CLAUDE.md; file:ap_portal/package.json; file:ap_portal/ci.mjs; file:ap_portal/README.md; file:ap_portal/docs/ap_portal.md |
+| Files changed | `src/ap_portal/index.js` (modified), `README.md` (modified) and `docs/ap_portal.md` (new). All three are in this step's write scope (`src/ap_portal/`, `docs/`, `README.md`). `git status` shows no other change | record:brief; file:ap_portal/src/ap_portal/index.js |
+| Compile | CI reports `compile` as `true` | `node ci.mjs` run in this step; file:ap_portal/ci.mjs |
+| Existing tests | `formats amounts with two decimals` and `renders every bucket in order` both pass. Neither test was changed | `node ci.mjs` run in this step; tool:repo |
+| Static checks | `static_issues` is empty: no `console.log`, no `eval(` and no line longer than 140 characters | `node ci.mjs` run in this step; file:ap_portal/ci.mjs |
+| Coverage gate | Not applied in this step, by owner decision. The owner accepted FE-04 without the coverage gate. FE-05 writes the new tests, and the full CI, including the 90% gate, must pass before the commit step | record:owner_answer; file:ap_portal/ci.mjs |
+| Existing behaviour | `VERSION`, `LABELS`, `formatAmount` and `renderAgingSummary` are unchanged | file:ap_portal/src/ap_portal/index.js; mcp:codegraph |
 
-## 1. Files changed
+### 1.1 CI output (last stdout line of `node ci.mjs`, run in this step)
 
-| File | Status | Change | Source |
+```json
+{"compile":true,"tests_run":2,"failures":0,"errors":0,"coverage":60.32,"static_issues":[],"passed":false}
+```
+
+The `test_output` and `coverage_report` fields are left out above. In the coverage report, the uncovered lines of `src/ap_portal/index.js` are `26-28 33-39 42-44 50-61`. These are the bodies of the four new functions, and no test calls them yet. `passed` is `false` only because the `coverage >= 90` condition fails (file:ap_portal/ci.mjs, line 17). The other conditions in that check all hold.
+
+## 2. What changed in `src/ap_portal/index.js`
+
+The change is additive. No existing line changes except `module.exports`, which now also exports `renderOverdueRisk`. The new code goes between `renderAgingSummary` and `module.exports`. This follows the repository rule "Keep existing public signatures; add new functions for new behaviour" (file:ap_portal/CLAUDE.md) and components FC-1 to FC-7 (task.components).
+
+| Component | Code | Implements | Source |
 |---|---|---|---|
-| `src/ap_portal/index.js` | Modified (additive) | Header comment updated; `VERSION` moved from `'2.3.0'` to `'2.4.0'`; new constants `RISK_CLASSES`, `OVERDUE_HEADINGS`, `HTML_ESCAPES` and `DECIMAL_STRING`; new private helpers `escapeHtml`, `toTwoDecimalString` and `riskClass`; new exported `renderOverdueRisk`, added to `module.exports`. The code of `LABELS`, `formatAmount` and `renderAgingSummary` is unchanged | file:ap_portal/src/ap_portal/index.js; tool:repo |
-| `docs/ap_portal.md` | New | Module overview: an exports table, and for `renderOverdueRisk` its signature, CT-1 input fields, output, `TypeError` cases, examples and private helpers | file:ap_portal/docs/ap_portal.md |
-| `README.md` | Modified | A table of the two render functions and a link to `docs/ap_portal.md` | file:ap_portal/README.md |
+| FC-1 `RISK_CLASSES` | `['high', 'medium', 'low', 'unknown']` | Allow-list for the row class | file:ap_portal/src/ap_portal/index.js; task.components; feat.design (B4.2); org.design_library |
+| FC-2 `OVERDUE_HEADINGS` | `['Invoice', 'Vendor', 'Days overdue', 'Amount']`. The header row is built by mapping over this constant | AC-07.1, AC-07.2; "Days overdue", never "Late" | file:ap_portal/src/ap_portal/index.js; task.components; feat.stories (AC-07.1, AC-07.2); feat.screens (section 6); org.design_library |
+| `HTML_ESCAPES`, `DECIMAL_STRING` | `HTML_ESCAPES` is the character map used by `escapeHtml`. `DECIMAL_STRING` is the pattern `^-?\d+(\.\d{1,2})?$` used by `toTwoDecimalString`. Neither is exported | Supporting constants. **Agent judgement:** task.components plans two constants (FC-1, FC-2). These two extra constants hold the map and the pattern that feat.design B4.2 puts inside the helpers, so each is defined once | file:ap_portal/src/ap_portal/index.js; feat.design (B4.2); task.components (section 2) |
+| FC-3 `escapeHtml(value)` (private) | Applies `String(value)`, then replaces `&`, `<`, `>`, `"` and `'` with `&amp;`, `&lt;`, `&gt;`, `&quot;` and `&#39;` | AC-07.7 | file:ap_portal/src/ap_portal/index.js; feat.design (B4.2, SE-2); feat.stories (AC-07.7) |
+| FC-4 `toTwoDecimalString(value)` (private) | Accepts only a string that matches `DECIMAL_STRING` and pads the fraction to two digits as a string. Anything else throws `TypeError('amount must be a decimal string with at most two decimals')`; the message names the field, as B4.4 requires. It never calls `Number()`, `parseFloat` or `formatAmount` | AC-07.5, AC-07.6; D-2026-044; L-011 | file:ap_portal/src/ap_portal/index.js; feat.design (B4.2, B4.4, DD-8); feat.stories (AC-07.5, AC-07.6); org.lessons; record:memory |
+| FC-5 `riskClass(risk)` (private) | Returns `risk-<risk>` for a value on the allow-list, else `risk-unknown` | AC-07.3, AC-07.8 | file:ap_portal/src/ap_portal/index.js; feat.design (B4.2); feat.stories (AC-07.3, AC-07.8) |
+| FC-6 `renderOverdueRisk(rows)` (exported) | Returns `''` for `undefined`, `null` or `[]`. Throws `TypeError` when `rows` is any other non-array value, or when a `days` value fails `Number.isInteger`. Otherwise returns `<table class="overdue-risk">`, the header row, one `<tr class="risk-…">` per row in the given order with cells id, vendor, days and amount (`class="amount"`), then `</table>`. It adds no `<thead>`/`<tbody>`, does not re-sort, shows no risk text and has no row action | AC-07.1 to AC-07.4, AC-07.9; SC-1 frames FS-1 and FS-2 | file:ap_portal/src/ap_portal/index.js; feat.design (B4.2 algorithm, B4.4); feat.screens (sections 3, 4); feat.stories (STORY-07) |
+| FC-7 `module.exports` | `{ VERSION, LABELS, formatAmount, renderAgingSummary, renderOverdueRisk }`. The helpers stay private | AC-07.10 | file:ap_portal/src/ap_portal/index.js; feat.design (B4.2); feat.stories (AC-07.10) |
 
-`git status --short` lists `README.md` and `src/ap_portal/index.js` as modified, and `docs/` as new and untracked (tool: `git status --short`).
+**Comments.** A `//` comment sits directly above each of the four new constants (`RISK_CLASSES`, `OVERDUE_HEADINGS`, `HTML_ESCAPES`, `DECIMAL_STRING`) and each of the four new functions (`escapeHtml`, `toTwoDecimalString`, `riskClass`, `renderOverdueRisk`). Between them, the comments state:
 
-This step's write scope does not include the following files, so they are unchanged (record:brief):
-- `tests/portal.test.js`: FE-05 adds the new tests (handoff in section 5).
-- `package.json`: `"version"` is still `2.3.0` (file:ap_portal/package.json). See open question CQ-FE-4.
+- the trace `FEAT-ZD-48600 / STORY-07`;
+- the money rule (D-2026-044);
+- the reason for escaping;
+- the accepted amount format;
+- the return values;
+- every `TypeError` path.
 
-## 2. Implementation (`src/ap_portal/index.js`)
+Source: file:ap_portal/src/ap_portal/index.js.
 
-| Item (task.components) | Code | Design / AC trace |
+**Error messages.** feat.design B4.4 requires the amount `TypeError` to name the field. It does not set the messages for `rows` and `days`. The messages `'rows must be an array of overdue rows'` and `'days must be an integer'` are **agent judgement** (file:ap_portal/src/ap_portal/index.js; feat.design B4.4).
+
+### 2.1 Match with the approved screen
+
+This match was checked by reading the code against the frames. No test runs it yet.
+
+- **FS-1 (populated).** For the FS-1 input rows, `renderOverdueRisk` produces the markup in feat.screens section 4, on one line: the header row `<tr><th>Invoice</th><th>Vendor</th><th>Days overdue</th><th>Amount</th></tr>`, then one `<tr class="risk-…"><td>id</td><td>vendor</td><td>days</td><td class="amount">amount</td></tr>` per row, in input order.
+- **FS-2 (empty).** For `[]`, it returns `''`.
+- **Defensive states.**
+  - ST-6: an unexpected risk value renders as `risk-unknown`.
+  - ST-7: markup in the text renders as escaped text.
+  - ST-8: the amount `"980.5"` renders as `980.50`.
+
+The FE-05 tests listed in feat.design B4.5 will confirm all of this (file:ap_portal/src/ap_portal/index.js; feat.screens; feat.design B4.5).
+
+**Design library.** The component emits only the class hooks `overdue-risk`, `risk-high`, `risk-medium`, `risk-low`, `risk-unknown` and `amount`. It sets no inline style and uses no tokens, because the design library defines none (org.design_library; feat.screens section 2).
+
+## 3. Documentation
+
+| File | Content | Source |
 |---|---|---|
-| 1.1 Header comment | Now reads "render the aging summary and the overdue risk table returned by the ap_aging service as HTML" | task.components 1.1 (optional; accepted) |
-| 1.2 `VERSION` | `'2.4.0'`, a minor step from `2.3.0` | feat.design DD-11; feat.stories TK-07.5; file:ap_portal/CLAUDE.md ("Version: src/ap_portal/index.js") |
-| 1.3 `RISK_CLASSES` | `['high', 'medium', 'low', 'unknown']` | feat.design B4.2; org.design_library |
-| 1.4 `OVERDUE_HEADINGS` | `['Invoice', 'Vendor', 'Days overdue', 'Amount']`; the header row is built with `map` + `join('')` | feat.design B4.2; org.design_library; AC-07.1, AC-07.2 |
-| 1.5 `escapeHtml(value)` | `String(value).replace(/[&<>"']/g, …)`, which looks each character up in `HTML_ESCAPES` (`&amp;`, `&lt;`, `&gt;`, `&quot;`, `&#39;`) | feat.design B4.2, SE-2; AC-07.7 |
-| 1.6 `toTwoDecimalString(value)` | Checks that the value is a string, matches it against `DECIMAL_STRING = /^(-?\d+)(?:\.(\d{1,2}))?$/` and pads the fraction with `padEnd(2, '0')`. Any other value throws `TypeError`. Never uses `Number()`, `parseFloat` or `formatAmount` | feat.design B4.2, B4.4, DD-5, DD-8; record:memory D-2026-044, L-011; AC-07.5, AC-07.6 |
-| 1.7 `riskClass(risk)` | `RISK_CLASSES.includes(risk) ? \`risk-${risk}\` : 'risk-unknown'` | feat.design B4.2; AC-07.3, AC-07.8 |
-| 1.8 `renderOverdueRisk(rows)` | Returns `''` for `undefined` or `null`, throws `TypeError` for a non-array, and returns `''` for `[]`. Otherwise it builds a header row with no class and no `<thead>`/`<tbody>`. For each row, an inline `Number.isInteger(row.days)` check throws `TypeError` on failure; the row then becomes `<tr class="risk-…">` with id, vendor, days and `<td class="amount">`. The result is wrapped in `<table class="overdue-risk">…</table>`. Rows keep the input order: no sorting, no risk text, no Risk column and no row action | feat.design B4.2 steps 1 to 4, B4.4; feat.screens sections 3 to 5; AC-07.1 to AC-07.4, AC-07.9 |
-| 1.9 `module.exports` | `{ VERSION, LABELS, formatAmount, renderAgingSummary, renderOverdueRisk }`. The helpers and constants are not exported | feat.design B4.2; AC-07.10; file:ap_portal/CLAUDE.md |
+| `README.md` | A function table that includes `renderOverdueRisk(rows)`, a short description of its input and behaviour, and a link to the module doc | record:brief; file:ap_portal/README.md |
+| `docs/ap_portal.md` (new) | A module overview and the export table. For `renderOverdueRisk`: the signature, the CT-1 input fields, the output, the error table, the money and escaping rules, a synthetic example (SYN-INV-004, SYN-INV-002) and the styling hooks. It also covers the private helpers and constants | feat.design (A3 CT-1, B4); feat.screens; record:brief; file:ap_portal/docs/ap_portal.md |
 
-**Comments.** Each new constant (`RISK_CLASSES`, `OVERDUE_HEADINGS`, `HTML_ESCAPES`, `DECIMAL_STRING`) and each new function (`escapeHtml`, `toTwoDecimalString`, `riskClass`, `renderOverdueRisk`) has a `//` comment directly above it. The comments state the purpose, the rule applied (for example D-2026-044 for amounts) and the errors thrown. The comments on the first three constants and on `renderOverdueRisk` also give the story ID STORY-07 (file:ap_portal/src/ap_portal/index.js). No line contains `console.log` or `eval(`, which the CI static check rejects (file:ap_portal/ci.mjs).
+## 4. Blast radius
 
-**Agent judgement.**
-- `HTML_ESCAPES` and `DECIMAL_STRING` are module constants, so the lookup table and the regex are built once rather than on every call. They implement items 1.5 and 1.6 ("a small lookup object", "one regex match") and are not exported (task.components 3.1).
-- Each `TypeError` message names its field (`rows`, `days`, `amount`), as feat.design B4.4 requires ("`TypeError` naming the field").
-
-### Expected output against the approved frame (FS-1)
-
-For the FS-1 input rows in feat.screens section 4, the code produces the single-line HTML that feat.screens shows:
-- The header comes from `OVERDUE_HEADINGS`.
-- Rows are rendered in the given order.
-- `"980.50"` and `"1250.00"` match `DECIMAL_STRING` and keep their two decimals.
-- `unknown` maps to `risk-unknown`.
-
-This was checked by reading the code. This step may run only `node ci.mjs` and read-only git commands (record:brief), so FE-05 must assert the output in a test (section 5).
-
-## 3. Rules kept
-
-| Rule | How | Source |
+| Check | Result | Source |
 |---|---|---|
-| Keep existing public signatures; add new functions for new behaviour | Additive only; `formatAmount` and `renderAgingSummary` are untouched | file:ap_portal/CLAUDE.md; file:ap_portal/src/ap_portal/index.js |
-| Amounts are never converted to a float | The amount path uses string operations only | record:memory D-2026-044, L-011; org.lessons L-011 |
-| No `console.log` / `eval(`; lines at most 140 characters | `node ci.mjs` reports no static issues | file:ap_portal/ci.mjs; tool: `node ci.mjs` |
-| "Days overdue", never "Late" | Heading text in `OVERDUE_HEADINGS` | task.components section 6; feat.screens section 6 |
-| No styles or tokens invented | Class hooks only; no inline style | feat.screens section 2 ("no tokens and no inline styles"); org.design_library |
-| Secrets | None used or referenced; the code does no I/O | task.secrets_scope (by reference only); feat.design NF-10 |
+| `codegraph_explore` on the new and changed symbols | `HTML_ESCAPES`, `DECIMAL_STRING`, `escapeHtml` and `toTwoDecimalString` each have 1 caller, all inside `src/ap_portal/index.js`. `HTML_ESCAPES` is used only by `escapeHtml`. `DECIMAL_STRING` is used only by `toTwoDecimalString`. Both helpers are used only by `renderOverdueRisk`. `formatAmount` is called only by `renderAgingSummary`, and the new code does not call it | mcp:codegraph |
+| `codegraph affected src/ap_portal/index.js` (after `codegraph sync`) | No affected test files reported. **Agent judgement:** the tests load the module by package name (`require('ap_portal')`), which CI resolves through `NODE_PATH=src`, and the index does not link that import to the file. So I ran the full CI, and both existing tests pass | mcp:codegraph; tool:repo; file:ap_portal/ci.mjs |
 
-## 4. CI result (`node ci.mjs`)
+## 5. Not changed in this step
 
-| Check | Result |
-|---|---|
-| Compile (`node --check`) | Pass |
-| Existing tests (`formats amounts with two decimals`, `renders every bucket in order`) | Both pass unchanged |
-| Static checks | No issues |
-| Line coverage | **Below the 90% threshold**: no test calls the bodies of the new helpers or of `renderOverdueRisk` yet |
-| Overall (`passed`) | **Fails**, on the coverage threshold only |
-
-Sources: tool `node ci.mjs`; file:ap_portal/ci.mjs (threshold `coverage >= 90`); tool:repo (`tests/portal.test.js` test names).
-
-**Why CI fails at the end of FE-04.** `ci.mjs` measures coverage only from `tests/*.test.js` (file:ap_portal/ci.mjs), and this step may not change `tests/` (record:brief). FE-05 adds the unit tests and must bring coverage to 90% or more. Compile, the existing tests and the static checks pass. CI must pass before FE-06 commits and pushes (CQ-FE-5).
-
-## 5. Handoff to FE-05 (tests for `tests/portal.test.js`)
-
-These tests come from task.components section 3.2 and feat.design B4.5. Each `TypeError` branch needs its own test so that coverage reaches 90% or more. Test data stays synthetic (`SYN-INV-*`, "Synthetic Vendor <letter>").
-
-| Test | Covers | AC |
+| Item | Why | Source |
 |---|---|---|
-| FS-1 rows give the exact FS-1 HTML (feat.screens section 4) | Main path, header, order | AC-07.1, AC-07.2 |
-| `high`, `medium`, `low`, `unknown` give the matching `risk-*` class | `riskClass` | AC-07.3 |
-| `[]`, `undefined` and `null` give `''` | Empty branches | AC-07.4 |
-| `"1250.00"`, `"15.00"` and a digit string longer than a JS `Number` holds are shown unchanged | `toTwoDecimalString` | AC-07.5 |
-| `"980.5"` gives `980.50`; `"980"` gives `980.00` | Padding | AC-07.6 |
-| A number amount, `"1e3"`, `"1,250.00"` or three decimals throws `TypeError` | Amount errors | DD-8 |
-| `<`, `&`, `"` and `'` in id and vendor are escaped | `escapeHtml` | AC-07.7 |
-| `risk: 'x" onclick="'` gives `risk-unknown` | Allow-list fallback | AC-07.8 |
-| A non-array `rows` (a string) throws `TypeError`; a non-integer `days` throws `TypeError` | Row errors | DD-8 |
-| The output has no `Risk` heading, no risk text, and no `<button>` or `<a` | No actions | AC-07.9 |
-| `renderOverdueRisk` is exported; the existing tests are unchanged | Exports | AC-07.10 |
+| `VERSION` (`'2.3.0'`) and the `package.json` `"version"` (`2.3.0`) (FC-8, FC-9) | DD-11 needs a minor version step in both files together. `package.json` is outside this step's write scope, and changing only `VERSION` would split the two, so both stay at `2.3.0` and still match. Proposal (TK-07.5): take one minor step from `2.3.0` in `index.js` and `package.json` together, in a step whose scope includes `package.json`. See Q-1 | task.components (FC-8, FC-9); feat.design (DD-11); feat.stories (TK-07.5); file:ap_portal/package.json; record:brief |
+| `tests/portal.test.js` (FC-10) | Written in FE-05 | record:owner_answer; task.components (FC-10) |
+| `LABELS`, `formatAmount`, `renderAgingSummary`, `ci.mjs` | Must not change | task.components (section 3); feat.design (B4.1) |
 
-## 6. Open questions (non-blocking)
+## 6. Hand-over to FE-05
 
-| ID | Question | Interim | Owner (proposed) |
-|---|---|---|---|
-| CQ-FE-3 | What is the next version number? | `VERSION = '2.4.0'`, a minor step (DD-11) | Developer |
-| CQ-FE-4 | `package.json` `"version"` must move with `VERSION` (task.components 3.3), but `package.json` is outside this step's write scope. Who updates it? | Left at `2.3.0`; FE-05 or FE-06 updates it, or the spine widens the scope | Developer |
-| CQ-FE-5 | CI line coverage is below 90% after FE-04, because tests are outside this step's scope | FE-05 adds the tests in section 5 and brings coverage to 90% or more | Developer |
-| CQ-FE-1, CQ-FE-2, RA-1 (carried) | Who styles the `risk-*` classes; no approved Figma frames; the branch name `feature/story` | As in task.components section 8 | UX lead / Developer |
-| TQ-7, TQ-11, OQ-B8, TQ-6, OQ-B9, PQ-P7, DQ-3 (carried) | Interim designs, implemented as specified | As in task.components section 7 | Architect / UX lead |
+FE-05 adds the eight tests in feat.design B4.5 and the coverage cases in task.components FC-10:
+
+- non-array `rows` → `TypeError`
+- non-integer `days` → `TypeError`
+- `null` → `''`
+- an amount with an exponent, a thousands separator or three decimals → `TypeError`
+
+These tests cover the uncovered lines listed in section 1.1, so `node ci.mjs` reports `passed: true` before the commit step (record:owner_answer; feat.design B4.5; task.components FC-10; feat.stories TK-07.3, TK-07.4).
+
+## 7. Open questions (none blocks this step)
+
+| ID | Question | Owner |
+|---|---|---|
+| Q-1 | Version step (FC-8, FC-9; DD-11; TK-07.5): `package.json` is outside FE-04's write scope. Which step sets the next minor version in both `src/ap_portal/index.js` and `package.json`, and who confirms the number? This must be settled before the commit step (FE-06) | Developer (step owner) |
+| Q-2 | Carried from FE-03 (CQ-FE-1): as feat.design B4.2 specifies, a missing or non-string `id` or `vendor` renders through `String(value)`, for example as the text `undefined`. Should it throw `TypeError` instead, as `days` and `amount` do (DD-8)? | Architect |
+| Q-3 | Carried from FE-03 (CQ-FE-2): who styles `overdue-risk` and the `risk-*` classes? The design library defines no tokens for them | UX lead |
+
+Also carried, unchanged: the pending markers on AC-07.2, AC-07.6, AC-07.7, AC-07.8 and AC-07.9 (feat.stories).
 
 
+<!-- tool results recorded by the spine -->
+## Tool results (recorded by the spine from the real tools)
 [Tool result] [ap_portal] Sources compile

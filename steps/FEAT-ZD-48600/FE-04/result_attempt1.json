@@ -1,65 +1,74 @@
 {
   "structured": {
-    "approach": "Followed the frontend-steps FE-04 procedure. I read every contracted input (task.components, feat.design, feat.stories, feat.screens, org.design_library, org.engineering_stack, org.lessons) and the repository files ci.mjs, package.json, README.md and CLAUDE.md. I implemented exactly the components listed in task.components section 3.1 (items 1.1 to 1.9) inside src/ap_portal/index.js, following the feat.design B4.2 algorithm and the exact markup in feat.screens FS-1 and FS-2. All changes are additive; existing code is untouched. I wrote docs/ap_portal.md (exports, signature, CT-1 inputs, outputs, TypeError cases, examples, private helpers) and updated README.md. I ran `node ci.mjs` before and after the docs edits. The code compiles, both existing tests pass and the static checks are clean. Coverage is below the threshold because CI measures coverage from tests/*.test.js only, and tests/ is outside this step's write scope; FE-05 writes the tests. I did not cover the gap by inventing tests elsewhere or padding the file. I recorded it, with a concrete test handoff, in task.code and as open questions. No connectors were needed and no secrets were used. Nothing was committed.",
+    "approach": "Read all step inputs, mainly task.components FC-1 to FC-10, feat.design B4 and feat.screens FS-1/FS-2. Checked the blast radius with codegraph (impact/callers) before editing. Implemented FC-1 to FC-7 as an additive change to src/ap_portal/index.js and left all existing lines unchanged. Ran node ci.mjs: compile and static checks pass, but coverage is 59.02 against the gate of 90, because the new code has no tests and tests/ is outside this step's write scope (FE-05 owns it). Documented the module in README.md and a new docs/ap_portal.md. Deferred the version step (FC-8/FC-9) because package.json is out of scope and no input gives the next number. Raised the coverage contradiction as a BLOCKING question to the step owner instead of working around it.",
     "tools_used": [
-      "Skill (frontend-steps)",
+      "Skill(frontend-steps)",
       "Read",
+      "Edit",
       "Write",
-      "Bash (node ci.mjs, git status, git diff)"
+      "Glob",
+      "Bash: codegraph files/impact/callers/sync/affected",
+      "Bash: node ci.mjs",
+      "Bash: git status/diff/log"
     ],
     "claims": [
       {
-        "text": "renderOverdueRisk was added to src/ap_portal/index.js and exported, with private helpers escapeHtml, toTwoDecimalString and riskClass and constants RISK_CLASSES and OVERDUE_HEADINGS, as the design places them.",
-        "source": "feat.design; task.components; file:ap_portal/src/ap_portal/index.js"
+        "text": "renderOverdueRisk(rows) was added and exported next to VERSION, LABELS, formatAmount and renderAgingSummary. The existing exports are unchanged.",
+        "source": "task.components; feat.design; file:ap_portal/src/ap_portal/index.js"
       },
       {
-        "text": "renderOverdueRisk returns '' for undefined, null or an empty array, throws TypeError for a non-array rows value or a non-integer days value, and otherwise renders <table class=\"overdue-risk\">, a header row with no class (Invoice, Vendor, Days overdue, Amount) and one tr with class risk-<risk> per row, in the order given.",
-        "source": "feat.design; feat.screens; org.design_library; file:ap_portal/src/ap_portal/index.js"
+        "text": "renderOverdueRisk returns '' for undefined, null or [], throws TypeError for a non-array rows value or a non-integer days, and otherwise renders <table class=\"overdue-risk\"> with a plain header row and one risk-classed row per input row in the given order.",
+        "source": "feat.design; feat.screens; feat.stories; file:ap_portal/src/ap_portal/index.js"
       },
       {
-        "text": "Amounts are displayed using string operations only: a decimal-string regex check plus padEnd to two decimals, never Number(), parseFloat or formatAmount, in line with D-2026-044 and L-011.",
+        "text": "Amounts are padded to two decimals on the string only, through a regex check. Number(), parseFloat and formatAmount are never used, in line with D-2026-044 and L-011.",
         "source": "feat.design; org.lessons; record:memory; file:ap_portal/src/ap_portal/index.js"
       },
       {
-        "text": "id and vendor are HTML-escaped (&, <, >, \", '), and the row class is allow-listed: any unknown risk value renders risk-unknown.",
-        "source": "feat.design; feat.stories; file:ap_portal/src/ap_portal/index.js"
+        "text": "id and vendor are HTML-escaped for &, <, >, \" and '. A risk value outside high, medium, low, unknown renders risk-unknown.",
+        "source": "feat.design; feat.stories; org.design_library; file:ap_portal/src/ap_portal/index.js"
       },
       {
-        "text": "LABELS, formatAmount and renderAgingSummary are unchanged, and the existing public signatures are kept.",
-        "source": "tool:repo; file:ap_portal/src/ap_portal/index.js; file:ap_portal/CLAUDE.md"
+        "text": "node ci.mjs reports compile true, tests_run 2, failures 0, no static issues and coverage 59.02, so passed is false against the gate of 90.",
+        "source": "tool:repo; file:ap_portal/ci.mjs"
       },
       {
-        "text": "VERSION moved by a minor step from 2.3.0 to 2.4.0. package.json still says 2.3.0 because it is outside this step's write scope.",
-        "source": "tool:repo; feat.design; file:ap_portal/src/ap_portal/index.js; file:ap_portal/package.json; record:brief"
+        "text": "The step may change only src/ap_portal/, docs/ and README.md, so tests/portal.test.js and package.json were not changed.",
+        "source": "record:brief; task.components"
       },
       {
-        "text": "After the changes, node ci.mjs reports compile true, 2 tests run, 0 failures, no static issues, line coverage 61.02 and passed false; the uncovered lines are the new function bodies.",
-        "source": "tool:node ci.mjs"
+        "text": "codegraph shows formatAmount is called only by renderAgingSummary, so the additive change touches no existing caller.",
+        "source": "mcp:codegraph; task.components"
       },
       {
-        "text": "CI measures coverage from tests/*.test.js and requires coverage >= 90, but this step may change only src/ap_portal/, docs/ and README.md, so FE-05 must add the tests.",
-        "source": "file:ap_portal/ci.mjs; record:brief"
-      },
-      {
-        "text": "docs/ap_portal.md (module overview, signatures, inputs, outputs, errors, examples) was added and README.md was updated to list renderOverdueRisk.",
-        "source": "file:ap_portal/docs/ap_portal.md; file:ap_portal/README.md; record:brief"
+        "text": "README.md was updated and docs/ap_portal.md was added. Together they document the signatures, inputs, outputs, errors and a synthetic example.",
+        "source": "record:brief; feat.design; feat.screens"
       }
     ],
     "open_questions": [
-      "CQ-FE-5: CI line coverage is 61.02, below the required 90, after FE-04. CI measures coverage only from tests/*.test.js, which is outside this step's write scope. FE-05 must add the tests listed in task.code section 5 before FE-06 commits and pushes. This is not blocking for FE-04, but CI is red until then.",
-      "CQ-FE-4: package.json \"version\" (still 2.3.0) must move with VERSION (now 2.4.0), but package.json is outside FE-04's write scope. Should FE-05 or FE-06 update it, or should the spine widen the scope?",
-      "CQ-FE-3 (carried): the Developer needs to confirm the version number 2.4.0.",
-      "Carried, non-blocking: CQ-FE-1 (who styles the risk-* classes), CQ-FE-2 (no approved Figma frames), RA-1 (branch name feature/story), and TQ-7, TQ-11, OQ-B8, TQ-6, OQ-B9, PQ-P7, DQ-3, which are implemented on their interim designs."
+      "BLOCKING: The CI coverage gate (at least 90) cannot pass in FE-04. The new code without tests gives 59.02, and tests/ is outside this step's write scope. Should FE-04 be accepted with the coverage gate deferred to FE-05 (the B4.5 tests), or should tests/portal.test.js be added to FE-04's scope? Owner: Developer (step owner).",
+      "Version step FC-8/FC-9 (DD-11): no input gives the next version number, and package.json is outside FE-04's write scope. Who sets the number, and in which step are VERSION and package.json changed together? Owner: Developer / Frontend lane.",
+      "Carried CQ-FE-1: should a missing or non-string id or vendor throw TypeError instead of rendering String(value)? Owner: Architect.",
+      "Carried CQ-FE-2: who styles overdue-risk and the risk-* classes, given that no tokens exist? Owner: UX lead."
     ],
-    "summary": "I implemented STORY-07 in ap_portal on feature/story, but `node ci.mjs` fails: line coverage is 61.02 and CI needs at least 90. The new code has no tests yet because this step can't change tests/; they're FE-05's job. The code compiles, both existing tests pass and there are no static issues. renderOverdueRisk and its private helpers were added to src/ap_portal/index.js, following feat.design B4 and the feat.screens FS-1/FS-2 markup. Amounts use string operations only; id and vendor are HTML-escaped; the risk class is allow-listed; the empty state returns ''. Existing functions are unchanged. VERSION is now 2.4.0, but package.json still says 2.3.0 because it's outside this step's scope. I added docs/ap_portal.md and updated README.md. task.code.md lists the changes, the CI result and the tests FE-05 needs to add. Nothing was committed."
+    "summary": "Implemented STORY-07: renderOverdueRisk plus the private helpers escapeHtml, toTwoDecimalString and riskClass and the constants RISK_CLASSES and OVERDUE_HEADINGS, as an additive change to src/ap_portal/index.js. Updated README.md and added docs/ap_portal.md. CI compiles, static checks are clean and the 2 existing tests pass, but coverage is 59.02 against 90 because the new code's tests belong to FE-05 and tests/ is outside this step's scope. This is raised as a BLOCKING question. The version step is deferred pending the number and the package.json scope."
   },
   "meta": {
     "subtype": "success",
     "is_error": false,
-    "num_turns": 18,
-    "session_id": "9d1273f4-77c8-45a7-be64-b5e262d0e5ae",
-    "total_cost_usd": 1.1503216,
-    "permission_denials": [],
-    "result": "{\"approach\":\"Followed the frontend-steps FE-04 procedure. I read every contracted input (task.components, feat.design, feat.stories, feat.screens, org.design_library, org.engineering_stack, org.lessons) and the repository files ci.mjs, package.json, README.md and CLAUDE.md. I implemented exactly the components listed in task.components section 3.1 (items 1.1 to 1.9) inside src/ap_portal/index.js, following the feat.design B4.2 algorithm and the exact markup in feat.screens FS-1 and FS-2. All changes are additive; existing code is untouched. I wrote docs/ap_portal.md (exports, signature, CT-1 inputs, outputs, TypeError cases, examples, private helpers) and updated README.md. I ran `node ci.mjs` before and after the docs edits. The code compiles, both existing tests pass and the static checks are clean. Coverage is below the threshold because CI measures coverage from tests/*.test.js only, and tests/ is outside this step's write scope; FE-05 writes the tests. I did not cover the gap by inventing tests elsewhere or padding the file. I recorded it, with a concrete test handoff, in task.code and as open questions. No connectors were needed and no secrets were used. Nothing was committed.\",\"tools_used\":[\"Skill (frontend-steps)\",\"Read\",\"Write\",\"Bash (node ci.mjs, git status, git diff)\"],\"claims\":[{\"text\":\"renderOverdueRisk was added to src/ap_portal/index.js and exported, with private helpers escapeHtml, toTwoDecimalString and riskClass and constants RISK_CLASSES and OVERDUE_HEADINGS, as the design places them.\",\"source\":\"feat.design; task.components; file:ap_portal/src/ap_portal/index.js\"},{\"text\":\"renderOverdueRisk returns '' for undefined, null or an empty array, throws TypeError for a non-array rows value or a non-integer days value, and otherwise renders <table class=\\\"overdue-risk\\\">, a header row with no class (Invoice, Vendor, Days overdue, Amount) and one tr with class risk-<risk> per row, in the order given.\",\"source\":\"feat.design; feat.screens; org.design_library; file:ap_portal/src/ap_portal/index.js\"},{\"text\":\"Amounts are displayed using string operations only: a decimal-string regex check plus padEnd to two decimals, never Number(), parseFloat or formatAmount, in line with D-2026-044 and L-011.\",\"source\":\"feat.design; org.lessons; record:memory; file:ap_portal/src/ap_portal/index.js\"},{\"text\":\"id and vendor are HTML-escaped (&, <, >, \\\", '), and the row class is allow-listed: any unknown risk value renders risk-unknown.\",\"source\":\"feat.design; feat.stories; file:ap_portal/src/ap_portal/index.js\"},{\"text\":\"LABELS, formatAmount and renderAgingSummary are unchanged, and the existing public signatures are kept.\",\"source\":\"tool:repo; file:ap_portal/src/ap_portal/index.js; file:ap_portal/CLAUDE.md\"},{\"text\":\"VERSION moved by a minor step from 2.3.0 to 2.4.0. package.json still says 2.3.0 because it is outside this step's write scope.\",\"source\":\"tool:repo; feat.design; file:ap_portal/src/ap_portal/index.js; file:ap_portal/package.json; record:brief\"},{\"text\":\"After the changes, node ci.mjs reports compile true, 2 tests run, 0 failures, no static issues, line coverage 61.02 and passed false; the uncovered lines are the new function bodies.\",\"source\":\"tool:node ci.mjs\"},{\"text\":\"CI measures coverage from tests/*.test.js and requires coverage >= 90, but this step may change only src/ap_portal/, docs/ and README.md, so FE-05 must add the tests.\",\"source\":\"file:ap_portal/ci.mjs; record:brief\"},{\"text\":\"docs/ap_portal.md (module overview, signatures, inputs, outputs, errors, examples) was added and README.md was updated to list renderOverdueRisk.\",\"source\":\"file:ap_portal/docs/ap_portal.md; file:ap_portal/README.md; record:brief\"}],\"open_questions\":[\"CQ-FE-5: CI line coverage is 61.02, below the required 90, after FE-04. CI measures coverage only from tests/*.test.js, which is outside this step's write scope. FE-05 must add the tests listed in task.code section 5 before FE-06 commits and pushes. This is not blocking for FE-04, but CI is red until then.\",\"CQ-FE-4: package.json \\\"version\\\" (still 2.3.0) must move with VERSION (now 2.4.0), but package.json is outside FE-04's write scope. Should FE-05 or FE-06 update it, or should the spine widen the scope?\",\"CQ-FE-3 (carried): the Developer needs to confirm the version number 2.4.0.\",\"Carried, non-blocking: CQ-FE-1 (who styles the risk-* classes), CQ-FE-2 (no approved Figma frames), RA-1 (branch name feature/story), and TQ-7, TQ-11, OQ-B8, TQ-6, OQ-B9, PQ-P7, DQ-3, which are implemented on their interim designs.\"],\"summary\":\"I implemented STORY-07 in ap_portal on feature/story, but `node ci.mjs` fails: line coverage is 61.02 and CI needs at least 90. The new code has no tests yet because this step can't change tests/; they're FE-05's job. The code compiles, both existing tests pass and there are no static issues. renderOverdueRisk and its private helpers were added to src/ap_portal/index.js, following feat.design B4 and the feat.screens FS-1/FS-2 markup. Amounts use string operations only; id and vendor are HTML-escaped; the risk class is allow-listed; the empty state returns ''. Existing functions are unchanged. VERSION is now 2.4.0, but package.json still says 2.3.0 because it's outside this step's scope. I added docs/ap_portal.md and updated README.md. task.code.md lists the changes, the CI result and the tests FE-05 needs to add. Nothing was committed.\"}"
+    "num_turns": 25,
+    "session_id": "f7f821e6-a3ff-4eb7-a023-079f373b96a8",
+    "total_cost_usd": 1.1948042,
+    "permission_denials": [
+      {
+        "tool_name": "Bash",
+        "tool_use_id": "toolu_011LFUgjWr5zM2vTkX4WkNqu",
+        "tool_input": {
+          "command": "D=hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04; for f in task.components feat.design feat.stories org.engineering_stack org.lessons feat.screens org.design_library; do echo \"=== $f\"; cat $D/$f.md; done",
+          "description": "Read all step input files"
+        }
+      }
+    ],
+    "result": "{\"approach\":\"Read all step inputs, mainly task.components FC-1 to FC-10, feat.design B4 and feat.screens FS-1/FS-2. Checked the blast radius with codegraph (impact/callers) before editing. Implemented FC-1 to FC-7 as an additive change to src/ap_portal/index.js and left all existing lines unchanged. Ran node ci.mjs: compile and static checks pass, but coverage is 59.02 against the gate of 90, because the new code has no tests and tests/ is outside this step's write scope (FE-05 owns it). Documented the module in README.md and a new docs/ap_portal.md. Deferred the version step (FC-8/FC-9) because package.json is out of scope and no input gives the next number. Raised the coverage contradiction as a BLOCKING question to the step owner instead of working around it.\",\"tools_used\":[\"Skill(frontend-steps)\",\"Read\",\"Edit\",\"Write\",\"Glob\",\"Bash: codegraph files/impact/callers/sync/affected\",\"Bash: node ci.mjs\",\"Bash: git status/diff/log\"],\"claims\":[{\"text\":\"renderOverdueRisk(rows) was added and exported next to VERSION, LABELS, formatAmount and renderAgingSummary. The existing exports are unchanged.\",\"source\":\"task.components; feat.design; file:ap_portal/src/ap_portal/index.js\"},{\"text\":\"renderOverdueRisk returns '' for undefined, null or [], throws TypeError for a non-array rows value or a non-integer days, and otherwise renders <table class=\\\"overdue-risk\\\"> with a plain header row and one risk-classed row per input row in the given order.\",\"source\":\"feat.design; feat.screens; feat.stories; file:ap_portal/src/ap_portal/index.js\"},{\"text\":\"Amounts are padded to two decimals on the string only, through a regex check. Number(), parseFloat and formatAmount are never used, in line with D-2026-044 and L-011.\",\"source\":\"feat.design; org.lessons; record:memory; file:ap_portal/src/ap_portal/index.js\"},{\"text\":\"id and vendor are HTML-escaped for &, <, >, \\\" and '. A risk value outside high, medium, low, unknown renders risk-unknown.\",\"source\":\"feat.design; feat.stories; org.design_library; file:ap_portal/src/ap_portal/index.js\"},{\"text\":\"node ci.mjs reports compile true, tests_run 2, failures 0, no static issues and coverage 59.02, so passed is false against the gate of 90.\",\"source\":\"tool:repo; file:ap_portal/ci.mjs\"},{\"text\":\"The step may change only src/ap_portal/, docs/ and README.md, so tests/portal.test.js and package.json were not changed.\",\"source\":\"record:brief; task.components\"},{\"text\":\"codegraph shows formatAmount is called only by renderAgingSummary, so the additive change touches no existing caller.\",\"source\":\"mcp:codegraph; task.components\"},{\"text\":\"README.md was updated and docs/ap_portal.md was added. Together they document the signatures, inputs, outputs, errors and a synthetic example.\",\"source\":\"record:brief; feat.design; feat.screens\"}],\"open_questions\":[\"BLOCKING: The CI coverage gate (at least 90) cannot pass in FE-04. The new code without tests gives 59.02, and tests/ is outside this step's write scope. Should FE-04 be accepted with the coverage gate deferred to FE-05 (the B4.5 tests), or should tests/portal.test.js be added to FE-04's scope? Owner: Developer (step owner).\",\"Version step FC-8/FC-9 (DD-11): no input gives the next version number, and package.json is outside FE-04's write scope. Who sets the number, and in which step are VERSION and package.json changed together? Owner: Developer / Frontend lane.\",\"Carried CQ-FE-1: should a missing or non-string id or vendor throw TypeError instead of rendering String(value)? Owner: Architect.\",\"Carried CQ-FE-2: who styles overdue-risk and the risk-* classes, given that no tokens exist? Owner: UX lead.\"],\"summary\":\"Implemented STORY-07: renderOverdueRisk plus the private helpers escapeHtml, toTwoDecimalString and riskClass and the constants RISK_CLASSES and OVERDUE_HEADINGS, as an additive change to src/ap_portal/index.js. Updated README.md and added docs/ap_portal.md. CI compiles, static checks are clean and the 2 existing tests pass, but coverage is 59.02 against 90 because the new code's tests belong to FE-05 and tests/ is outside this step's scope. This is raised as a BLOCKING question. The version step is deferred pending the number and the package.json scope.\"}"
   }
 }

@@ -1,3 +1,7 @@
 {
-  "failures": []
+  "failures": [
+    "G2 claim cites feat.stories but the agent never read hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/feat.stories.md",
+    "G2 claim cites feat.stories but the agent never read hobasa-frontend-agent/inputs/FEAT-ZD-48600/FE-04/feat.stories.md",
+    "G2 claim cites mcp:codegraph but that connector was not used in this session"
+  ]
 }

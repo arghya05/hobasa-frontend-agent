@@ -1,5 +1,3 @@
 {
-  "failures": [
-    "G3 numbers ['61.67', '25', '27', '32', '36', '41', '47', '58'] in \"node ci.mjs reports compile true, 2 tests run, 0 failures, no static issues, line coverage 61.67 and\" do not appear in tool:node ci.mjs; file:ap_portal/src/ap_portal/index.js"
-  ]
+  "failures": []
 }

@@ -1,0 +1,9 @@
+{
+  "answer": "Accept FE-04 without the coverage gate. In this coding step write the code and its documentation, and make sure everything compiles and the existing tests pass. The new tests are written in the unit-test step that follows (FE-05), and the full CI including the 90% coverage gate must pass before the commit step.",
+  "by": "arghya05",
+  "simulated": false,
+  "questions": [
+    "BLOCKING: The CI coverage gate (line coverage of at least 90) cannot be met within this step's write scope. The new code's tests (FC-10) belong in tests/portal.test.js, which this step may not change. Should this step be accepted with the coverage gate moved to the unit-test step, or should tests/portal.test.js be added to this step's scope? Owner: Developer (step owner)."
+  ],
+  "decided": 1792943148.189331
+}

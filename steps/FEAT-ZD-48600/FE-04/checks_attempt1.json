@@ -1,15 +1,6 @@
 {
   "failures": [
-    "G2 claim cites file:ap_portal/src/ap_portal/index.js but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/src/ap_portal/index.js but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/src/ap_portal/index.js but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/src/ap_portal/index.js but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/src/ap_portal/index.js but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/CLAUDE.md but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/src/ap_portal/index.js but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/package.json but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/ci.mjs but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/docs/ap_portal.md but the agent never read that file in this session",
-    "G2 claim cites file:ap_portal/README.md but the agent never read that file in this session"
+    "G3 numbers ['59.02'] in \"node ci.mjs reports compile true, tests_run 2, failures 0, no static issues and coverage 59.02, so p\" do not appear in tool:repo; file:ap_portal/ci.mjs",
+    "G2 claim cites mcp:codegraph but that connector was not used in this session"
   ]
 }
