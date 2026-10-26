@@ -1,0 +1,6 @@
+{
+  "failures": [
+    "Claude Code session ended no_json: Error: Session ID 97e9b771-531c-4ead-9a5d-93b76aaa2cd4 is already in use.\n",
+    "G5 declared output task.commit was not written at hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.commit.md"
+  ]
+}

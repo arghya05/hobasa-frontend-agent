@@ -1,0 +1,35 @@
+{
+  "structured": {
+    "approach": "",
+    "tools_used": [],
+    "claims": [],
+    "open_questions": [],
+    "summary": "API Error: Your computer went to sleep mid-response. The response above may be incomplete."
+  },
+  "meta": {
+    "subtype": "success",
+    "is_error": true,
+    "num_turns": 23,
+    "session_id": "e9318af4-8cfc-4eed-824d-b95e7aa0ec65",
+    "total_cost_usd": 0.8391926000000001,
+    "permission_denials": [
+      {
+        "tool_name": "Bash",
+        "tool_use_id": "toolu_01NvaBPSkWEqnNXZroK4Smwu",
+        "tool_input": {
+          "command": "git status && git log --oneline -5 --stat && git branch -a && git remote -v && git show ba23d7f --format='%H%n%an <%ae>%n%ad%n%B' --stat",
+          "description": "Inspect repo status, history, branches and remotes"
+        }
+      },
+      {
+        "tool_name": "Bash",
+        "tool_use_id": "toolu_01Nc4MjhPLCtNuUxH2EySLpY",
+        "tool_input": {
+          "command": "git status && git log --oneline -5 --stat",
+          "description": "Show working tree status and recent commits"
+        }
+      }
+    ],
+    "result": "API Error: Your computer went to sleep mid-response. The response above may be incomplete."
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "failures": [
+    "Claude Code session ended success: API Error: Your computer went to sleep mid-response. The response above may be incomplete.",
+    "G5 declared output task.commit was not written at hobasa-frontend-agent/outputs/FEAT-ZD-48600/task.commit.md"
+  ]
+}

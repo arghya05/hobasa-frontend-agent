@@ -1,0 +1,18 @@
+{
+  "structured": {
+    "approach": "",
+    "tools_used": [],
+    "claims": [],
+    "open_questions": [],
+    "summary": "Error: Session ID 9d6cc0f2-b5eb-4a4e-8e65-fdbe6cd70641 is already in use.\n"
+  },
+  "meta": {
+    "subtype": "no_json",
+    "is_error": true,
+    "num_turns": null,
+    "session_id": null,
+    "total_cost_usd": null,
+    "permission_denials": null,
+    "result": "Error: Session ID 9d6cc0f2-b5eb-4a4e-8e65-fdbe6cd70641 is already in use.\n"
+  }
+}
